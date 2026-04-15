@@ -6,7 +6,7 @@ import { User, AuthState } from '@/types/auth';
 import { authService } from './authService';
 
 interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<User | null>;
   logout: () => void;
 }
 
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User | null> => {
     setState(prev => ({ ...prev, isLoading: true }));
     const user = await authService.login(email, password);
 
@@ -49,11 +49,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: true,
         isLoading: false,
       });
-      return true;
+      return user;
     }
 
     setState(prev => ({ ...prev, isLoading: false }));
-    return false;
+    return null;
   };
 
   const logout = () => {

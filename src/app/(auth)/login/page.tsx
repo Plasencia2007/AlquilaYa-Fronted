@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -12,18 +14,37 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    // Si ya está logueado, mandarlo a su dashboard
+    if (!isAuthLoading && isAuthenticated && user) {
+      if (user.role === 'PROVEEDOR') {
+        router.replace('/landlord/dashboard');
+      } else if (user.role === 'ADMIN') {
+        router.replace('/admin-master');
+      } else {
+        router.replace('/');
+      }
+    }
+  }, [isAuthenticated, user, isAuthLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    const success = await login(email, password);
+    const user = await login(email, password);
 
-    if (success) {
-      router.push('/');
+    if (user) {
+      if (user.role === 'PROVEEDOR') {
+        router.push('/landlord/dashboard');
+      } else if (user.role === 'ADMIN') {
+        router.push('/admin-master');
+      } else {
+        router.push('/');
+      }
     } else {
       setError('Credenciales incorrectas. Intenta de nuevo.');
     }
@@ -31,7 +52,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-surface-container-lowest rounded-[2.5rem] editorial-shadow border border-outline-variant/10 p-10 animate-scale-in">
+    <Card variant="lowest" padding="lg" className="animate-scale-in" hoverable={false}>
       <div className="text-center mb-10">
         <h1 className="text-3xl font-black text-on-surface tracking-tight mb-2">Bienvenido de vuelta</h1>
         <p className="text-on-surface-variant font-medium opacity-70">Gestiona tu espacio o encuentra tu hogar.</p>
@@ -43,18 +64,15 @@ export default function LoginPage() {
           <label htmlFor="email" className="block text-sm font-bold text-on-surface ml-1">
             Correo electrónico
           </label>
-          <div className="relative group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tucorreo@ejemplo.com"
-              required
-              className="w-full pl-12 pr-4 py-4 bg-surface-container-low border border-outline-variant/20 rounded-2xl text-on-surface placeholder:text-outline/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
-            />
-          </div>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="tucorreo@ejemplo.com"
+            icon="mail"
+            required
+          />
         </div>
 
         {/* Password */}
@@ -65,21 +83,21 @@ export default function LoginPage() {
             </label>
             <Link href="#" className="text-xs font-bold text-primary hover:underline">¿La olvidaste?</Link>
           </div>
-          <div className="relative group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
-            <input
+          <div className="relative">
+            <Input
               id="password"
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              icon="lock"
               required
-              className="w-full pl-12 pr-12 py-4 bg-surface-container-low border border-outline-variant/20 rounded-2xl text-on-surface placeholder:text-outline/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+              className="pr-12"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors z-10"
             >
               <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
             </button>
@@ -95,20 +113,14 @@ export default function LoginPage() {
         )}
 
         {/* Submit */}
-        <button
+        <Button
           type="submit"
-          disabled={isLoading}
-          className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+          isLoading={isLoading}
+          className="w-full mt-4"
+          size="lg"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Verificando...
-            </>
-          ) : (
-            'Ingresar a mi cuenta'
-          )}
-        </button>
+          Ingresar a mi cuenta
+        </Button>
       </form>
 
       {/* Divider */}
@@ -119,13 +131,14 @@ export default function LoginPage() {
       </div>
 
       {/* Google (disabled) */}
-      <button
-        disabled
-        className="w-full py-3.5 border border-outline-variant/30 rounded-full text-sm font-bold text-outline cursor-not-allowed flex items-center justify-center gap-3 transition-colors"
+      <Button
+          variant="ghost"
+          disabled
+          className="w-full border border-outline-variant/30"
+          leftIcon={<svg className="w-5 h-5 opacity-50" viewBox="0 0 24 24"><path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>}
       >
-        <svg className="w-5 h-5 opacity-50" viewBox="0 0 24 24"><path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>
-        Cuenta Google
-      </button>
+          Cuenta Google
+      </Button>
 
       {/* Link a registro */}
       <p className="text-center text-sm text-on-surface-variant font-medium mt-10">
@@ -135,7 +148,7 @@ export default function LoginPage() {
         </Link>
       </p>
 
-      {/* Test Credentials Placeholder - Made more discreet */}
+      {/* Test Credentials Placeholder */}
       <div className="mt-8 p-5 bg-surface-container-low/50 rounded-2xl border border-outline-variant/10 group overflow-hidden">
         <p className="text-[10px] font-black text-outline uppercase tracking-wider mb-3 flex items-center gap-2">
           <span className="material-symbols-outlined text-sm">terminal</span> Modo Desarrollo (Mocks)
@@ -146,7 +159,7 @@ export default function LoginPage() {
           <p>• <span className="text-on-surface font-bold">Admin:</span> admin@test.com / 123456</p>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 

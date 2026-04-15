@@ -1,10 +1,39 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { MOCK_PROPERTIES } from '@/mocks';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Input } from '@/components/ui/Input';
 
 export default function Home() {
+  const { isAuthenticated, user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user) {
+      if (user.role === 'PROVEEDOR') {
+        router.replace('/landlord/dashboard');
+      } else if (user.role === 'ADMIN') {
+        router.replace('/admin-master');
+      }
+    }
+  }, [isAuthenticated, user, isLoading, router]);
+
   const featuredProperties = MOCK_PROPERTIES.filter(p => p.available).slice(0, 3);
+
+  // Si está logueado y se está redirigiendo, mostramos loading para evitar flicker del home
+  if (!isLoading && isAuthenticated) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-white flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background">
@@ -29,11 +58,11 @@ export default function Home() {
           </h1>
 
           {/* Glass Search Bar */}
-          <div className="bg-white/95 backdrop-blur-[24px] p-2 rounded-2xl editorial-shadow flex flex-col md:flex-row gap-2 max-w-3xl border border-white/20 shadow-2xl">
+          <Card variant="glass" padding="none" className="flex flex-col md:flex-row gap-2 max-w-3xl backdrop-blur-[24px] pointer-events-auto p-2" hoverable={false}>
             <div className="flex-1 flex items-center px-4 gap-3 py-4 border-r border-outline-variant/20">
               <span className="material-symbols-outlined text-primary">location_on</span>
               <input 
-                className="bg-transparent border-none focus:ring-0 w-full placeholder:text-outline font-medium text-on-surface" 
+                className="bg-transparent border-none focus:outline-none w-full placeholder:text-outline font-medium text-on-surface" 
                 placeholder="¿Dónde quieres vivir?" 
                 type="text"
               />
@@ -41,16 +70,15 @@ export default function Home() {
             <div className="flex-1 flex items-center px-4 gap-3 py-4 md:border-r border-outline-variant/20">
               <span className="material-symbols-outlined text-primary">calendar_today</span>
               <input 
-                className="bg-transparent border-none focus:ring-0 w-full placeholder:text-outline font-medium text-on-surface" 
+                className="bg-transparent border-none focus:outline-none w-full placeholder:text-outline font-medium text-on-surface" 
                 placeholder="Fecha de ingreso" 
                 type="text"
               />
             </div>
-            <button className="bg-primary text-on-primary px-10 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined">search</span>
+            <Button size="lg" className="rounded-xl px-10" leftIcon={<span className="material-symbols-outlined">search</span>}>
               Buscar
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       </section>
 
@@ -70,18 +98,18 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Large Hero Card (Bento Style) */}
           {featuredProperties[0] && (
-            <div className="md:col-span-2 relative group rounded-[2.5rem] overflow-hidden min-h-[550px] editorial-shadow">
+            <Card padding="none" className="md:col-span-2 relative min-h-[550px]" hoverable>
               <img 
                 src={featuredProperties[0].images[0]} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                 alt={featuredProperties[0].title}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-8 sm:p-12 text-white w-full flex flex-col sm:flex-row justify-between items-end gap-6">
                 <div className="flex-1">
-                  <span className="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block backdrop-blur-md">
+                  <Badge variant="secondary" className="mb-4">
                     Más popular
-                  </span>
+                  </Badge>
                   <h3 className="text-4xl font-black mb-2 leading-tight">{featuredProperties[0].title}</h3>
                   <p className="flex items-center gap-1 opacity-90 text-lg">
                     <span className="material-symbols-outlined text-sm">location_on</span> {featuredProperties[0].location}
@@ -89,18 +117,18 @@ export default function Home() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-4xl font-black mb-6">S/ {featuredProperties[0].price}<span className="text-lg font-normal opacity-70">/mes</span></p>
-                  <Link href={`/property/${featuredProperties[0].id}`} className="bg-white text-primary px-10 py-4 rounded-full font-bold hover:bg-primary-fixed transition-all block text-center shadow-xl">
-                    Ver detalles
-                  </Link>
+                  <Button variant="white" size="lg" className="px-10" asChild>
+                    <Link href={`/property/${featuredProperties[0].id}`}>Ver detalles</Link>
+                  </Button>
                 </div>
               </div>
-            </div>
+            </Card>
           )}
 
           {/* Stacked Vertical Cards */}
           <div className="flex flex-col gap-8">
             {featuredProperties.slice(1, 3).map((property) => (
-              <div key={property.id} className="bg-surface-container-lowest rounded-[2rem] overflow-hidden editorial-shadow group flex flex-col flex-1">
+              <Card key={property.id} padding="none" className="flex flex-col flex-1 group">
                 <div className="relative h-48 overflow-hidden">
                   <img src={property.images[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={property.title} />
                   <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1 text-sm font-bold text-on-surface shadow-sm">
@@ -123,7 +151,7 @@ export default function Home() {
                     Conocer más <span className="material-symbols-outlined text-sm transition-transform group-hover/btn:translate-x-1">chevron_right</span>
                   </Link>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -138,23 +166,23 @@ export default function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Students Card */}
-          <div className="p-10 rounded-[3rem] bg-surface-container-lowest border border-outline-variant/10 editorial-shadow text-center flex flex-col items-center group hover:-translate-y-2 transition-transform duration-500">
+          <Card padding="lg" className="text-center flex flex-col items-center">
             <div className="w-20 h-20 bg-primary-fixed rounded-3xl flex items-center justify-center mb-8 shadow-inner transition-colors group-hover:bg-primary group-hover:text-on-primary">
               <span className="material-symbols-outlined text-4xl">school</span>
             </div>
             <h3 className="text-3xl font-black mb-4">Estudiantes</h3>
             <p className="text-on-surface-variant mb-10 leading-relaxed text-lg">Encuentra el cuarto ideal cerca de tu universidad. Filtra por precio, servicios y reseñas reales.</p>
             <ul className="space-y-4 text-left w-full mb-10">
-              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-primary">check_circle</span> Búsqueda inteligente</li>
-              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-primary">check_circle</span> Filtros Universitarios</li>
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-primary font-black">check_circle</span> Búsqueda inteligente</li>
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-primary font-black">check_circle</span> Filtros Universitarios</li>
             </ul>
-            <button className="w-full py-5 rounded-full border-2 border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-all duration-300">
+            <Button variant="outline" size="xl" className="w-full">
               Empezar a buscar
-            </button>
-          </div>
+            </Button>
+          </Card>
 
           {/* Providers Card (Premium Dark) */}
-          <div className="p-10 rounded-[3rem] bg-primary text-on-primary editorial-shadow text-center flex flex-col items-center relative overflow-hidden group hover:-translate-y-2 transition-transform duration-500 shadow-2xl shadow-primary/30">
+          <Card padding="lg" variant="surface" className="bg-primary text-on-primary text-center flex flex-col items-center relative overflow-hidden shadow-2xl shadow-primary/30">
             <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
             <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mb-8 shadow-inner">
               <span className="material-symbols-outlined text-white text-4xl">real_estate_agent</span>
@@ -165,42 +193,42 @@ export default function Home() {
               <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-white/70">check_circle</span> Dashboard de gestión</li>
               <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-white/70">check_circle</span> Pagos automatizados</li>
             </ul>
-            <button className="w-full py-5 rounded-full bg-white text-primary font-bold hover:bg-primary-fixed transition-all duration-300 shadow-xl">
+            <Button variant="white" size="xl" className="w-full">
               Publicar mi cuarto
-            </button>
-          </div>
+            </Button>
+          </Card>
 
           {/* Admin Card */}
-          <div className="p-10 rounded-[3rem] bg-surface-container-lowest border border-outline-variant/10 editorial-shadow text-center flex flex-col items-center group hover:-translate-y-2 transition-transform duration-500">
+          <Card padding="lg" className="text-center flex flex-col items-center">
             <div className="w-20 h-20 bg-secondary-fixed rounded-3xl flex items-center justify-center mb-8 shadow-inner group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
               <span className="material-symbols-outlined text-4xl">shield_person</span>
             </div>
             <h3 className="text-3xl font-black mb-4">Administradores</h3>
             <p className="text-on-surface-variant mb-10 leading-relaxed text-lg">Control total sobre la plataforma. Valida usuarios, media disputas y analiza métricas en tiempo real.</p>
             <ul className="space-y-4 text-left w-full mb-10">
-              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-secondary">check_circle</span> Moderación Avanzada</li>
-              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-secondary">check_circle</span> Reportes de IA</li>
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-secondary font-black">check_circle</span> Moderación Avanzada</li>
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-secondary font-black">check_circle</span> Reportes de IA</li>
             </ul>
-            <button className="w-full py-5 rounded-full border-2 border-secondary text-secondary font-bold hover:bg-secondary hover:text-on-secondary transition-all duration-300">
+            <Button variant="outline" size="xl" className="w-full border-secondary text-secondary hover:bg-secondary hover:text-on-secondary">
               Gestión Central
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       </section>
 
       {/* ── CTA Banner ── */}
       <section className="py-24 px-6 sm:px-12 relative overflow-hidden">
-        <div className="bg-surface-container-highest rounded-[4rem] overflow-hidden flex flex-col lg:flex-row items-center editorial-shadow">
+        <Card padding="none" variant="surface" className="bg-surface-container-highest flex flex-col lg:flex-row items-center" hoverable={false}>
           <div className="flex-1 p-12 sm:p-20 text-center lg:text-left">
             <h2 className="text-4xl sm:text-[4rem] font-extrabold leading-[1.1] mb-8 tracking-tighter">Convierte tu espacio en una fuente de ingresos.</h2>
             <p className="text-xl text-on-surface-variant mb-12 max-w-xl mx-auto lg:mx-0 leading-relaxed">Únete a cientos de proveedores que confían en AlquilaYa para gestionar sus propiedades con seguridad.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-primary text-on-primary px-12 py-5 rounded-full font-bold text-lg hover:shadow-2xl hover:-translate-y-1 transition-all">
+              <Button size="xl" className="px-12">
                 Publicar mi cuarto
-              </button>
-              <button className="bg-white border border-outline-variant/30 text-on-surface px-12 py-5 rounded-full font-bold text-lg hover:bg-surface-container-low transition-all">
+              </Button>
+              <Button variant="ghost" size="xl" className="px-12 border border-outline-variant/30 bg-white">
                 Guía para anfitriones
-              </button>
+              </Button>
             </div>
           </div>
           <div className="flex-1 w-full h-[400px] lg:h-full lg:min-h-[600px] relative">
@@ -210,7 +238,7 @@ export default function Home() {
               src="https://images.unsplash.com/photo-1557053910-d9eadeed1c58?q=80&w=1974&auto=format&fit=crop"
             />
           </div>
-        </div>
+        </Card>
       </section>
     </main>
   );
