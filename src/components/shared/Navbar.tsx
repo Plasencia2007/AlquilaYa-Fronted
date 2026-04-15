@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { Search, Menu, X, User, LogOut, Heart, History, Building, ShieldCheck } from 'lucide-react';
+import { Menu, X, User, LogOut, ShieldCheck, ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -22,151 +22,118 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <Building className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">
-              Alquila<span className="text-primary-600">Ya</span>
-            </span>
+    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-outline-variant/10 px-6 sm:px-12 py-4 flex justify-between items-center transition-all duration-300 editorial-shadow">
+      {/* ── Left Side: Logo & Navigation ── */}
+      <div className="flex items-center gap-12">
+        <Link href="/" className="flex items-center gap-2 group transition-transform active:scale-95">
+          <span className="text-2xl font-black tracking-tighter text-primary">
+            Alquila<span className="text-primary-container">Ya</span>
+          </span>
+        </Link>
+        
+        <div className="hidden md:flex gap-8 items-center">
+          <Link href="/search" className="text-primary font-['Manrope'] font-bold tracking-tight border-b-2 border-primary pb-1 transition-all">
+            Explorar Cuartos
           </Link>
+          <Link href="#" className="text-on-surface-variant font-['Manrope'] font-bold tracking-tight hover:text-primary transition-all duration-300">
+            Para Estudiantes
+          </Link>
+          <Link href="#" className="text-on-surface-variant font-['Manrope'] font-bold tracking-tight hover:text-primary transition-all duration-300">
+            Para Proveedores
+          </Link>
+        </div>
+      </div>
 
-          {/* Buscador central (desktop) */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar cuartos, zona, universidad..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-              />
-            </div>
-          </div>
+      {/* ── Right Side: Auth Actions ── */}
+      <div className="flex items-center gap-4">
+        {isAuthenticated && user ? (
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-full border border-outline-variant/20 hover:shadow-md transition-all group"
+            >
+              <div className="w-8 h-8 bg-primary text-on-primary rounded-full flex items-center justify-center text-sm font-bold shadow-inner">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <span className="hidden sm:block text-sm font-bold text-on-surface-variant group-hover:text-primary">
+                {user.name.split(' ')[0]}
+              </span>
+              <ChevronDown className={`w-4 h-4 text-outline transition-transform duration-300 ${menuOpen ? 'rotate-180' : ''}`} />
+            </button>
 
-          {/* Acciones derecha */}
-          <div className="flex items-center gap-3">
-            {isAuthenticated && user ? (
-              <>
-                {/* Botón admin */}
-                {user.role === 'ADMIN' && (
-                  <Link
-                    href="/admin-master"
-                    className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    Panel Maestro
-                  </Link>
-                )}
-
-                {/* Avatar + Menú dropdown */}
-                <div className="relative" ref={menuRef}>
-                  <button
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full hover:shadow-md transition-shadow"
-                  >
-                    <Menu className="w-4 h-4 text-gray-500" />
-                    <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-semibold">
-                        {user.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  </button>
-
-                  {menuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2 animate-scale-in">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
-                        <span className="inline-block mt-1 text-[10px] font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full uppercase">
-                          {user.role}
-                        </span>
-                      </div>
-
-                      {user.role === 'ESTUDIANTE' && (
-                        <>
-                          <Link href="/student/favorites" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>
-                            <Heart className="w-4 h-4" /> Favoritos
-                          </Link>
-                          <Link href="/student/history" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>
-                            <History className="w-4 h-4" /> Historial
-                          </Link>
-                        </>
-                      )}
-
-                      {user.role === 'PROVEEDOR' && (
-                        <>
-                          <Link href="/landlord/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>
-                            <Building className="w-4 h-4" /> Mi Dashboard
-                          </Link>
-                          <Link href="/landlord/properties" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>
-                            <Building className="w-4 h-4" /> Mis Propiedades
-                          </Link>
-                        </>
-                      )}
-
-                      {user.role === 'ADMIN' && (
-                        <Link href="/admin-master" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors sm:hidden" onClick={() => setMenuOpen(false)}>
-                          <ShieldCheck className="w-4 h-4" /> Panel Maestro
-                        </Link>
-                      )}
-
-                      <div className="border-t border-gray-100 mt-1">
-                        <button
-                          onClick={() => { logout(); setMenuOpen(false); }}
-                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <LogOut className="w-4 h-4" /> Cerrar sesión
-                        </button>
-                      </div>
-                    </div>
-                  )}
+            {menuOpen && (
+              <div className="absolute right-0 mt-3 w-64 bg-surface-container-lowest rounded-2xl editorial-shadow border border-outline-variant/10 py-3 animate-scale-in overflow-hidden">
+                <div className="px-5 py-3 border-b border-outline-variant/10 mb-2">
+                  <p className="text-sm font-bold text-on-surface">{user.name}</p>
+                  <p className="text-xs text-outline">{user.email}</p>
                 </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/login"
-                  className="hidden sm:block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  Iniciar Sesión
+                
+                <Link href={user.role === 'PROVEEDOR' ? '/landlord/dashboard' : '/student/favorites'} 
+                      className="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[20px]">dashboard</span>
+                  Panel de Control
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+
+                <button
+                  onClick={() => { logout(); setMenuOpen(false); }}
+                  className="flex items-center gap-3 w-full px-5 py-2.5 text-sm font-medium text-error hover:bg-error-container/20 transition-colors mt-2"
                 >
-                  Registrarse
-                </Link>
+                  <span className="material-symbols-outlined text-[20px]">logout</span>
+                  Cerrar Sesión
+                </button>
               </div>
             )}
-
-            {/* Mobile hamburger */}
-            <button
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
-        </div>
-
-        {/* Buscador mobile */}
-        {mobileOpen && (
-          <div className="md:hidden pb-4 animate-slide-down">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar cuartos..."
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-            </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="hidden sm:flex items-center gap-1.5 px-6 py-2.5 rounded-full font-bold text-on-surface-variant hover:bg-surface-container-low transition-all duration-300"
+            >
+              Log In
+            </Link>
+            <Link
+              href="/register"
+              className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-primary/20 hover:scale-105 active:scale-95 transition-all duration-300"
+            >
+              Sign Up
+            </Link>
           </div>
         )}
+
+        {/* Mobile menu button */}
+        <button
+          className="md:hidden p-2 rounded-full hover:bg-surface-container-low transition-colors"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-on-surface" />}
+        </button>
       </div>
+
+      {/* ── Mobile Navigation Drawer ── */}
+      {mobileOpen && (
+        <div className="absolute top-full left-0 w-full bg-white border-b border-outline-variant/10 p-6 flex flex-col gap-6 animate-slide-down md:hidden glass-nav shadow-xl">
+          <Link href="/search" className="text-lg font-bold text-primary flex items-center justify-between" onClick={() => setMobileOpen(false)}>
+            Explorar Cuartos <span className="material-symbols-outlined">search</span>
+          </Link>
+          <Link href="#" className="text-lg font-bold text-on-surface-variant" onClick={() => setMobileOpen(false)}>
+            Para Estudiantes
+          </Link>
+          <Link href="#" className="text-lg font-bold text-on-surface-variant" onClick={() => setMobileOpen(false)}>
+            Para Proveedores
+          </Link>
+          {!isAuthenticated && (
+            <div className="flex flex-col gap-3 pt-4 border-t border-outline-variant/10">
+              <Link href="/login" className="w-full text-center py-4 rounded-2xl font-bold bg-surface-container-low" onClick={() => setMobileOpen(false)}>
+                Identificarse
+              </Link>
+              <Link href="/register" className="w-full text-center py-4 rounded-2xl font-bold bg-primary text-on-primary shadow-lg" onClick={() => setMobileOpen(false)}>
+                Registrarse
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

@@ -1,50 +1,80 @@
 'use client';
 
-import { Users, Building, CalendarCheck, DollarSign } from 'lucide-react';
 import StatsCard from '@/components/admin/StatsCard';
 import StatusBadge from '@/components/admin/StatusBadge';
-import { ADMIN_METRICS, RECENT_ACTIVITIES } from '@/lib/mockData';
+import { ADMIN_METRICS, RECENT_ACTIVITIES } from '@/mocks';
 
-const METRIC_ICONS = [Users, Building, CalendarCheck, DollarSign];
+const METRIC_ICONS = ['group', 'apartment', 'calendar_check', 'payments'];
 
 export default function AdminDashboard() {
   return (
-    <div>
+    <div className="animate-fade-in">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-admin-text">Panel de Administración</h1>
-        <p className="text-sm text-admin-text-muted mt-1">Resumen general de la plataforma AlquilaYa</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+        <div>
+          <span className="text-primary font-bold tracking-[0.2em] uppercase text-[10px] mb-2 block">Resumen de Operaciones</span>
+          <h1 className="text-4xl font-black text-on-surface tracking-tighter">Panel de Control</h1>
+        </div>
+        <div className="flex gap-3">
+          <button className="px-6 py-3 rounded-full bg-surface-container-high text-on-surface font-bold text-xs hover:bg-surface-container-highest transition-all flex items-center gap-2">
+            <span className="material-symbols-outlined text-sm">download</span>
+            Descargar Reporte
+          </button>
+          <button className="px-6 py-3 rounded-full bg-primary text-on-primary font-bold text-xs hover:shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+            <span className="material-symbols-outlined text-sm">add</span>
+            Nueva Propiedad
+          </button>
+        </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {ADMIN_METRICS.map((metric, i) => (
-          <StatsCard key={metric.label} {...metric} icon={METRIC_ICONS[i]} />
+          <StatsCard 
+            key={metric.label} 
+            {...metric} 
+            icon={METRIC_ICONS[i]} 
+          />
         ))}
       </div>
 
-      {/* Recent Activity Table */}
-      <div className="bg-admin-surface border border-admin-border rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-admin-border">
-          <h2 className="text-base font-semibold text-admin-text">Actividad Reciente</h2>
+      {/* Recent Activity Section */}
+      <div className="bg-surface-container-lowest rounded-[2.5rem] editorial-shadow border border-outline-variant/10 overflow-hidden">
+        <div className="px-8 py-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-low/30">
+          <h2 className="text-lg font-black text-on-surface tracking-tight">Actividad Reciente</h2>
+          <button className="text-primary text-xs font-bold hover:underline">Ver todo</button>
         </div>
+        
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-admin-border text-admin-text-muted text-left">
-                <th className="px-5 py-3 font-medium">Descripción</th>
-                <th className="px-5 py-3 font-medium">Usuario</th>
-                <th className="px-5 py-3 font-medium">Estado</th>
-                <th className="px-5 py-3 font-medium">Tiempo</th>
+              <tr className="border-b border-outline-variant/5 text-outline text-[11px] font-black uppercase tracking-widest bg-surface-container-low/10">
+                <th className="px-8 py-5">Descripción del Evento</th>
+                <th className="px-8 py-5">Usuario</th>
+                <th className="px-8 py-5">Estado</th>
+                <th className="px-8 py-5">Registro Horario</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-outline-variant/5">
               {RECENT_ACTIVITIES.map(activity => (
-                <tr key={activity.id} className="border-b border-admin-border/50 hover:bg-admin-surface-2 transition-colors">
-                  <td className="px-5 py-3.5 text-admin-text">{activity.description}</td>
-                  <td className="px-5 py-3.5 text-admin-text-muted">{activity.user}</td>
-                  <td className="px-5 py-3.5"><StatusBadge status={activity.status} /></td>
-                  <td className="px-5 py-3.5 text-admin-text-muted text-xs">{activity.timestamp}</td>
+                <tr key={activity.id} className="hover:bg-surface-container-low/50 transition-colors group">
+                  <td className="px-8 py-5 text-sm font-bold text-on-surface leading-snug max-w-md">
+                    {activity.description}
+                  </td>
+                  <td className="px-8 py-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-secondary-container/30 rounded-full flex items-center justify-center text-[10px] font-black text-on-secondary-container">
+                        {activity.user.charAt(0)}
+                      </div>
+                      <span className="text-sm font-medium text-on-surface-variant">{activity.user}</span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5">
+                    <StatusBadge status={activity.status as any} />
+                  </td>
+                  <td className="px-8 py-5 text-xs text-outline font-medium">
+                    {activity.timestamp}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -54,3 +84,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+

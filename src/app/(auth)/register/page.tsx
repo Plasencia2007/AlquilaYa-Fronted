@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { UserRole } from '@/types/auth';
 
 export default function RegisterPage() {
@@ -25,39 +25,39 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 animate-fade-in">
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Crear cuenta</h1>
-        <p className="text-sm text-gray-500 mt-1">Únete a la comunidad AlquilaYa</p>
+    <div className="bg-surface-container-lowest rounded-[2.5rem] editorial-shadow border border-outline-variant/10 p-10 animate-scale-in">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-black text-on-surface tracking-tight mb-2">Crea tu cuenta</h1>
+        <p className="text-on-surface-variant font-medium opacity-70">Únete a la nueva era del alquiler urbano.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Nombre */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+        <div className="space-y-2">
+          <label htmlFor="name" className="block text-sm font-bold text-on-surface ml-1">
             Nombre completo
           </label>
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <div className="relative group">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
             <input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Tu nombre"
+              placeholder="Tu nombre completo"
               required
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              className="w-full pl-12 pr-4 py-4 bg-surface-container-low border border-outline-variant/20 rounded-2xl text-on-surface placeholder:text-outline/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
             />
           </div>
         </div>
 
         {/* Email */}
-        <div>
-          <label htmlFor="register-email" className="block text-sm font-medium text-gray-700 mb-1.5">
+        <div className="space-y-2">
+          <label htmlFor="register-email" className="block text-sm font-bold text-on-surface ml-1">
             Correo electrónico
           </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <div className="relative group">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
             <input
               id="register-email"
               type="email"
@@ -65,18 +65,18 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tucorreo@ejemplo.com"
               required
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              className="w-full pl-12 pr-4 py-4 bg-surface-container-low border border-outline-variant/20 rounded-2xl text-on-surface placeholder:text-outline/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
             />
           </div>
         </div>
 
         {/* Password */}
-        <div>
-          <label htmlFor="register-password" className="block text-sm font-medium text-gray-700 mb-1.5">
+        <div className="space-y-2">
+          <label htmlFor="register-password" className="block text-sm font-bold text-on-surface ml-1">
             Contraseña
           </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <div className="relative group">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
             <input
               id="register-password"
               type={showPassword ? 'text' : 'password'}
@@ -85,49 +85,47 @@ export default function RegisterPage() {
               placeholder="Mínimo 6 caracteres"
               required
               minLength={6}
-              className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              className="w-full pl-12 pr-12 py-4 bg-surface-container-low border border-outline-variant/20 rounded-2xl text-on-surface placeholder:text-outline/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
             </button>
           </div>
         </div>
 
         {/* Role selector */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="space-y-3">
+          <label className="block text-sm font-bold text-on-surface ml-1">
             ¿Cómo usarás AlquilaYa?
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setRole('ESTUDIANTE')}
-              className={`p-3 rounded-xl border-2 text-center transition-all ${
+              className={`p-4 rounded-2xl border-2 text-center transition-all duration-300 flex flex-col items-center gap-1 ${
                 role === 'ESTUDIANTE'
-                  ? 'border-primary-500 bg-primary-50 text-primary-700'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  ? 'border-primary bg-primary/5 text-primary ring-4 ring-primary/10'
+                  : 'border-outline-variant/20 text-on-surface-variant hover:border-outline/30 hover:bg-surface-container-low'
               }`}
             >
-              <p className="text-lg mb-0.5">🎓</p>
-              <p className="text-sm font-medium">Estudiante</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Busco cuarto</p>
+              <span className="material-symbols-outlined text-2xl">school</span>
+              <p className="text-xs font-bold uppercase tracking-wider">Estudiante</p>
             </button>
             <button
               type="button"
               onClick={() => setRole('PROVEEDOR')}
-              className={`p-3 rounded-xl border-2 text-center transition-all ${
+              className={`p-4 rounded-2xl border-2 text-center transition-all duration-300 flex flex-col items-center gap-1 ${
                 role === 'PROVEEDOR'
-                  ? 'border-primary-500 bg-primary-50 text-primary-700'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  ? 'border-primary bg-primary/5 text-primary ring-4 ring-primary/10'
+                  : 'border-outline-variant/20 text-on-surface-variant hover:border-outline/30 hover:bg-surface-container-low'
               }`}
             >
-              <p className="text-lg mb-0.5">🏠</p>
-              <p className="text-sm font-medium">Proveedor</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Ofrezco cuartos</p>
+              <span className="material-symbols-outlined text-2xl">real_estate_agent</span>
+              <p className="text-xs font-bold uppercase tracking-wider">Proveedor</p>
             </button>
           </div>
         </div>
@@ -136,25 +134,26 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+          className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
               Creando cuenta...
             </>
           ) : (
-            'Crear cuenta'
+            'Empezar ahora'
           )}
         </button>
       </form>
 
-      <p className="text-center text-sm text-gray-500 mt-6">
-        ¿Ya tienes cuenta?{' '}
-        <Link href="/login" className="text-primary-600 font-medium hover:underline">
+      <p className="text-center text-sm text-on-surface-variant font-medium mt-10">
+        ¿Ya eres miembro?{' '}
+        <Link href="/login" className="text-primary font-bold hover:underline">
           Inicia sesión
         </Link>
       </p>
     </div>
   );
 }
+

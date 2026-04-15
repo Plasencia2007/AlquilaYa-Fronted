@@ -4,11 +4,8 @@ import { encodeJWT } from '@/utils/jwt';
 
 const AUTH_COOKIE_NAME = 'auth-token';
 
-export const MOCK_USERS = [
-  { id: '1', email: 'estudiante@test.com', password: '123456', role: 'ESTUDIANTE' as UserRole, name: 'Carlos Estudiante' },
-  { id: '2', email: 'proveedor@test.com', password: '123456', role: 'PROVEEDOR' as UserRole, name: 'María Proveedora' },
-  { id: '3', email: 'admin@test.com', password: '123456', role: 'ADMIN' as UserRole, name: 'Admin Master' },
-];
+import { MOCK_USERS } from '@/mocks/users';
+
 
 export const authService = {
   login: async (email: string, password: string): Promise<User | null> => {

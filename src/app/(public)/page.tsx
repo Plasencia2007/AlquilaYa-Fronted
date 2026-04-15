@@ -1,198 +1,216 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, MapPin, Star, ArrowRight, Shield, Zap, HeartHandshake } from 'lucide-react';
-import { MOCK_PROPERTIES } from '@/lib/mockData';
+import { MOCK_PROPERTIES } from '@/mocks';
 
 export default function Home() {
-  const featuredProperties = MOCK_PROPERTIES.filter(p => p.available).slice(0, 6);
+  const featuredProperties = MOCK_PROPERTIES.filter(p => p.available).slice(0, 3);
 
   return (
-    <div>
+    <main className="pt-24 min-h-screen bg-background">
       {/* ── Hero Section ── */}
-      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
-        {/* Decorative circles */}
-        <div className="absolute top-[-120px] right-[-80px] w-[400px] h-[400px] bg-primary-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-[-100px] left-[-60px] w-[300px] h-[300px] bg-primary-400/15 rounded-full blur-3xl" />
+      <section className="relative min-h-[800px] flex items-center px-6 sm:px-12 overflow-hidden mb-12">
+        <div className="absolute inset-0 z-0">
+          <img 
+            alt="Modern living" 
+            className="w-full h-full object-cover" 
+            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent"></div>
+        </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-              Encuentra tu
-              <span className="block text-primary-200">cuarto ideal</span>
-            </h1>
-            <p className="text-lg text-primary-100 mb-8 leading-relaxed">
-              Explora cientos de cuartos verificados cerca de tu universidad.
-              Rápido, seguro y sin complicaciones.
-            </p>
+        <div className="relative z-10 max-w-4xl animate-fade-in">
+          <span className="text-primary font-bold tracking-[0.2em] uppercase text-xs mb-4 block">
+            Curated Living for the Modern Professional
+          </span>
+          <h1 className="text-5xl md:text-[5rem] font-extrabold leading-[1] tracking-tighter text-on-surface mb-8 max-w-2xl">
+            Encuentra tu próximo hogar con <span className="text-primary">AlquilaYa</span>.
+          </h1>
 
-            {/* Search bar */}
-            <div className="bg-white rounded-2xl p-2 shadow-2xl flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="¿Dónde buscas? (zona, distrito, universidad...)"
-                  className="w-full pl-10 pr-4 py-3.5 text-gray-900 text-sm rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50"
-                />
-              </div>
-              <button className="flex items-center justify-center gap-2 px-6 py-3.5 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors shrink-0">
-                <Search className="w-4 h-4" />
-                Buscar
-              </button>
+          {/* Glass Search Bar */}
+          <div className="bg-surface-container-lowest/85 backdrop-blur-[24px] p-2 rounded-2xl editorial-shadow flex flex-col md:flex-row gap-2 max-w-3xl border border-outline-variant/10">
+            <div className="flex-1 flex items-center px-4 gap-3 py-4 border-r border-outline-variant/20">
+              <span className="material-symbols-outlined text-primary">location_on</span>
+              <input 
+                className="bg-transparent border-none focus:ring-0 w-full placeholder:text-outline font-medium text-on-surface" 
+                placeholder="¿Dónde quieres vivir?" 
+                type="text"
+              />
             </div>
-
-            {/* Stats */}
-            <div className="flex gap-8 mt-10">
-              <div>
-                <p className="text-2xl font-bold">1,200+</p>
-                <p className="text-sm text-primary-200">Cuartos activos</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold">850+</p>
-                <p className="text-sm text-primary-200">Estudiantes felices</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold">98%</p>
-                <p className="text-sm text-primary-200">Satisfacción</p>
-              </div>
+            <div className="flex-1 flex items-center px-4 gap-3 py-4 md:border-r border-outline-variant/20">
+              <span className="material-symbols-outlined text-primary">calendar_today</span>
+              <input 
+                className="bg-transparent border-none focus:ring-0 w-full placeholder:text-outline font-medium text-on-surface" 
+                placeholder="Fecha de ingreso" 
+                type="text"
+              />
             </div>
+            <button className="bg-primary text-on-primary px-10 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95 shadow-lg shadow-primary/20">
+              <span className="material-symbols-outlined">search</span>
+              Buscar
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ── Cuartos Destacados ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="flex items-end justify-between mb-8">
+      {/* ── Habitaciones Destacadas (Bento Grid) ── */}
+      <section className="py-24 px-6 sm:px-12 bg-surface-container-low">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Cuartos Destacados</h2>
-            <p className="text-gray-500 mt-1">Los más buscados esta semana</p>
+            <h2 className="text-4xl font-extrabold tracking-tight mb-3 text-on-surface">Habitaciones Destacadas</h2>
+            <p className="text-on-surface-variant max-w-lg">Residencias seleccionadas a mano, diseñadas para el confort, la productividad y la conexión.</p>
           </div>
-          <Link
-            href="/search"
-            className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
-          >
-            Ver todos <ArrowRight className="w-4 h-4" />
+          <Link href="/search" className="text-primary font-bold flex items-center gap-2 group transition-all">
+            Explorar todas 
+            <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProperties.map((property, index) => (
-            <Link
-              key={property.id}
-              href={`/property/${property.id}`}
-              className="group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300 animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Image placeholder */}
-              <div className="relative h-52 bg-gradient-to-br from-primary-100 to-primary-200 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-primary-300/50 rounded-2xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
-                      <MapPin className="w-8 h-8 text-primary-700" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Large Hero Card (Bento Style) */}
+          {featuredProperties[0] && (
+            <div className="md:col-span-2 relative group rounded-[2.5rem] overflow-hidden min-h-[550px] editorial-shadow">
+              <img 
+                src={featuredProperties[0].images[0]} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                alt={featuredProperties[0].title}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-8 sm:p-12 text-white w-full flex flex-col sm:flex-row justify-between items-end gap-6">
+                <div className="flex-1">
+                  <span className="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block backdrop-blur-md">
+                    Más popular
+                  </span>
+                  <h3 className="text-4xl font-black mb-2 leading-tight">{featuredProperties[0].title}</h3>
+                  <p className="flex items-center gap-1 opacity-90 text-lg">
+                    <span className="material-symbols-outlined text-sm">location_on</span> {featuredProperties[0].location}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-4xl font-black mb-6">S/ {featuredProperties[0].price}<span className="text-lg font-normal opacity-70">/mes</span></p>
+                  <Link href={`/property/${featuredProperties[0].id}`} className="bg-white text-primary px-10 py-4 rounded-full font-bold hover:bg-primary-fixed transition-all block text-center shadow-xl">
+                    Ver detalles
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Stacked Vertical Cards */}
+          <div className="flex flex-col gap-8">
+            {featuredProperties.slice(1, 3).map((property) => (
+              <div key={property.id} className="bg-surface-container-lowest rounded-[2rem] overflow-hidden editorial-shadow group flex flex-col flex-1">
+                <div className="relative h-48 overflow-hidden">
+                  <img src={property.images[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={property.title} />
+                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1 text-sm font-bold text-on-surface shadow-sm">
+                    <span className="material-symbols-outlined text-yellow-500 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                    {property.rating}
+                  </div>
+                </div>
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start gap-2 mb-2">
+                      <h4 className="font-bold text-xl text-on-surface leading-snug">{property.title}</h4>
+                      <p className="font-black text-primary text-lg">S/ {property.price}</p>
                     </div>
-                    <p className="text-xs text-primary-600 font-medium">{property.type}</p>
+                    <p className="text-sm text-on-surface-variant flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm text-outline">location_on</span>
+                      {property.location}
+                    </p>
                   </div>
+                  <Link href={`/property/${property.id}`} className="text-primary font-bold flex items-center gap-1 hover:underline mt-4 text-sm group/btn">
+                    Conocer más <span className="material-symbols-outlined text-sm transition-transform group-hover/btn:translate-x-1">chevron_right</span>
+                  </Link>
                 </div>
-                {/* Price badge */}
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-                  <span className="text-sm font-bold text-gray-900">S/ {property.price}</span>
-                  <span className="text-xs text-gray-500">/mes</span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
-                  {property.title}
-                </h3>
-                <div className="flex items-center gap-1 mt-1.5 text-sm text-gray-500">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {property.location}
-                </div>
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    <span className="text-sm font-medium text-gray-900">{property.rating}</span>
-                    <span className="text-xs text-gray-400">({property.reviews})</span>
-                  </div>
-                  <div className="flex gap-3 text-xs text-gray-500">
-                    <span>{property.area}m²</span>
-                    <span>{property.bedrooms} hab</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="sm:hidden mt-6 text-center">
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600"
-          >
-            Ver todos los cuartos <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* ── Cómo funciona ── */}
-      <section className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">¿Cómo funciona?</h2>
-            <p className="text-gray-500 mt-2">Encontrar tu cuarto ideal es más fácil de lo que crees</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Search,
-                title: 'Busca',
-                description: 'Filtra por zona, precio, universidad cercana y amenidades. Encuentra justo lo que necesitas.',
-              },
-              {
-                icon: Shield,
-                title: 'Verifica',
-                description: 'Todas las propiedades son verificadas por nuestro equipo. Fotos reales y datos confirmados.',
-              },
-              {
-                icon: Zap,
-                title: 'Reserva',
-                description: 'Contacta al proveedor y reserva en minutos. Proceso 100% digital y seguro.',
-              },
-            ].map(({ icon: Icon, title, description }, i) => (
-              <div key={title} className="text-center p-6 animate-fade-in" style={{ animationDelay: `${i * 150}ms` }}>
-                <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Icon className="w-7 h-7 text-primary-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-gradient-to-r from-primary-600 to-primary-800 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden">
-          <div className="absolute top-[-50px] right-[-50px] w-[200px] h-[200px] bg-primary-500/20 rounded-full blur-2xl" />
-          <div className="relative">
-            <HeartHandshake className="w-12 h-12 mx-auto mb-4 text-primary-200" />
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3">¿Tienes un cuarto disponible?</h2>
-            <p className="text-primary-100 mb-6 max-w-lg mx-auto">
-              Únete como proveedor y llega a miles de estudiantes buscando alojamiento.
-            </p>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
-            >
-              Publicar mi cuarto <ArrowRight className="w-4 h-4" />
-            </Link>
+      {/* ── User Types Section ── */}
+      <section className="py-24 px-6 sm:px-12 bg-surface">
+        <div className="text-center mb-20 animate-fade-in">
+          <h2 className="text-5xl font-extrabold mb-4 tracking-tighter">Diseñado para cada necesidad</h2>
+          <p className="text-on-surface-variant text-xl">Una plataforma, tres experiencias personalizadas.</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Students Card */}
+          <div className="p-10 rounded-[3rem] bg-surface-container-lowest border border-outline-variant/10 editorial-shadow text-center flex flex-col items-center group hover:-translate-y-2 transition-transform duration-500">
+            <div className="w-20 h-20 bg-primary-fixed rounded-3xl flex items-center justify-center mb-8 shadow-inner transition-colors group-hover:bg-primary group-hover:text-on-primary">
+              <span className="material-symbols-outlined text-4xl">school</span>
+            </div>
+            <h3 className="text-3xl font-black mb-4">Estudiantes</h3>
+            <p className="text-on-surface-variant mb-10 leading-relaxed text-lg">Encuentra el cuarto ideal cerca de tu universidad. Filtra por precio, servicios y reseñas reales.</p>
+            <ul className="space-y-4 text-left w-full mb-10">
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-primary">check_circle</span> Búsqueda inteligente</li>
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-primary">check_circle</span> Filtros Universitarios</li>
+            </ul>
+            <button className="w-full py-5 rounded-full border-2 border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-all duration-300">
+              Empezar a buscar
+            </button>
+          </div>
+
+          {/* Providers Card (Premium Dark) */}
+          <div className="p-10 rounded-[3rem] bg-primary text-on-primary editorial-shadow text-center flex flex-col items-center relative overflow-hidden group hover:-translate-y-2 transition-transform duration-500 shadow-2xl shadow-primary/30">
+            <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mb-8 shadow-inner">
+              <span className="material-symbols-outlined text-white text-4xl">real_estate_agent</span>
+            </div>
+            <h3 className="text-3xl font-black mb-4">Proveedores</h3>
+            <p className="text-blue-100 mb-10 leading-relaxed text-lg">Monetiza tus espacios vacíos. Gestiona tus rentas de forma profesional y eficiente desde tu celular.</p>
+            <ul className="space-y-4 text-left w-full mb-10">
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-white/70">check_circle</span> Dashboard de gestión</li>
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-white/70">check_circle</span> Pagos automatizados</li>
+            </ul>
+            <button className="w-full py-5 rounded-full bg-white text-primary font-bold hover:bg-primary-fixed transition-all duration-300 shadow-xl">
+              Publicar mi cuarto
+            </button>
+          </div>
+
+          {/* Admin Card */}
+          <div className="p-10 rounded-[3rem] bg-surface-container-lowest border border-outline-variant/10 editorial-shadow text-center flex flex-col items-center group hover:-translate-y-2 transition-transform duration-500">
+            <div className="w-20 h-20 bg-secondary-fixed rounded-3xl flex items-center justify-center mb-8 shadow-inner group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+              <span className="material-symbols-outlined text-4xl">shield_person</span>
+            </div>
+            <h3 className="text-3xl font-black mb-4">Administradores</h3>
+            <p className="text-on-surface-variant mb-10 leading-relaxed text-lg">Control total sobre la plataforma. Valida usuarios, media disputas y analiza métricas en tiempo real.</p>
+            <ul className="space-y-4 text-left w-full mb-10">
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-secondary">check_circle</span> Moderación Avanzada</li>
+              <li className="flex items-center gap-4 text-sm font-semibold"><span className="material-symbols-outlined text-secondary">check_circle</span> Reportes de IA</li>
+            </ul>
+            <button className="w-full py-5 rounded-full border-2 border-secondary text-secondary font-bold hover:bg-secondary hover:text-on-secondary transition-all duration-300">
+              Gestión Central
+            </button>
           </div>
         </div>
       </section>
-    </div>
+
+      {/* ── CTA Banner ── */}
+      <section className="py-24 px-6 sm:px-12 relative overflow-hidden">
+        <div className="bg-surface-container-highest rounded-[4rem] overflow-hidden flex flex-col lg:flex-row items-center editorial-shadow">
+          <div className="flex-1 p-12 sm:p-20 text-center lg:text-left">
+            <h2 className="text-4xl sm:text-[4rem] font-extrabold leading-[1.1] mb-8 tracking-tighter">Convierte tu espacio en una fuente de ingresos.</h2>
+            <p className="text-xl text-on-surface-variant mb-12 max-w-xl mx-auto lg:mx-0 leading-relaxed">Únete a cientos de proveedores que confían en AlquilaYa para gestionar sus propiedades con seguridad.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <button className="bg-primary text-on-primary px-12 py-5 rounded-full font-bold text-lg hover:shadow-2xl hover:-translate-y-1 transition-all">
+                Publicar mi cuarto
+              </button>
+              <button className="bg-white border border-outline-variant/30 text-on-surface px-12 py-5 rounded-full font-bold text-lg hover:bg-surface-container-low transition-all">
+                Guía para anfitriones
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 w-full h-[400px] lg:h-full lg:min-h-[600px] relative">
+            <img 
+              alt="Happy Provider" 
+              className="absolute inset-0 w-full h-full object-cover" 
+              src="https://images.unsplash.com/photo-1557053910-d9eadeed1c58?q=80&w=1974&auto=format&fit=crop"
+            />
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
