@@ -9,9 +9,11 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setIsMounted(true);
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
@@ -30,7 +32,7 @@ export default function Navbar() {
             Alquila<span className="text-primary-container">Ya</span>
           </span>
         </Link>
-        
+
         <div className="hidden md:flex gap-8 items-center">
           <Link href="/search" className="text-primary font-['Manrope'] font-bold tracking-tight border-b-2 border-primary pb-1 transition-all">
             Explorar Cuartos
@@ -44,9 +46,8 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Right Side: Auth Actions ── */}
       <div className="flex items-center gap-4">
-        {isAuthenticated && user ? (
+        {isMounted && isAuthenticated && user ? (
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -67,9 +68,9 @@ export default function Navbar() {
                   <p className="text-sm font-bold text-on-surface">{user.name}</p>
                   <p className="text-xs text-outline">{user.email}</p>
                 </div>
-                
-                <Link href={user.role === 'PROVEEDOR' ? '/landlord/dashboard' : '/student/favorites'} 
-                      className="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors">
+
+                <Link href={user.role === 'PROVEEDOR' ? '/landlord/dashboard' : '/student/favorites'}
+                  className="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors">
                   <span className="material-symbols-outlined text-[20px]">dashboard</span>
                   Panel de Control
                 </Link>
@@ -84,7 +85,7 @@ export default function Navbar() {
               </div>
             )}
           </div>
-        ) : (
+        ) : isMounted && (
           <div className="flex items-center gap-3">
             <Link
               href="/login"
@@ -101,7 +102,6 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Mobile menu button */}
         <button
           className="md:hidden p-2 rounded-full hover:bg-surface-container-low transition-colors"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -110,7 +110,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* ── Mobile Navigation Drawer ── */}
       {mobileOpen && (
         <div className="absolute top-full left-0 w-full bg-white border-b border-outline-variant/10 p-6 flex flex-col gap-6 animate-slide-down md:hidden glass-nav shadow-xl">
           <Link href="/search" className="text-lg font-bold text-primary flex items-center justify-between" onClick={() => setMobileOpen(false)}>
@@ -122,7 +121,7 @@ export default function Navbar() {
           <Link href="#" className="text-lg font-bold text-on-surface-variant" onClick={() => setMobileOpen(false)}>
             Para Proveedores
           </Link>
-          {!isAuthenticated && (
+          {isMounted && !isAuthenticated && (
             <div className="flex flex-col gap-3 pt-4 border-t border-outline-variant/10">
               <Link href="/login" className="w-full text-center py-4 rounded-2xl font-bold bg-surface-container-low" onClick={() => setMobileOpen(false)}>
                 Identificarse
@@ -137,3 +136,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

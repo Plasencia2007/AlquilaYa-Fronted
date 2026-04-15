@@ -9,7 +9,6 @@ import { MOCK_USERS } from '@/mocks/users';
 
 export const authService = {
   login: async (email: string, password: string): Promise<User | null> => {
-    // Simular retraso de red
     await new Promise(resolve => setTimeout(resolve, 800));
 
     const user = MOCK_USERS.find(u => u.email === email && u.password === password);
@@ -26,7 +25,7 @@ export const authService = {
 
       const token = encodeJWT(payload);
       Cookies.set(AUTH_COOKIE_NAME, token, { expires: 1 }); // 1 día
-      
+
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }

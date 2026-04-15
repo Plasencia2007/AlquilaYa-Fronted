@@ -13,36 +13,36 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: true,
+  const [state, setState] = useState<AuthState>(() => {
+    const token = typeof window !== 'undefined' ? Cookies.get('auth-token') : undefined;
+    if (token) {
+      const user = authService.getCurrentUserFromToken(token);
+      if (user) {
+        return { user, isAuthenticated: true, isLoading: false };
+      }
+    }
+    return { user: null, isAuthenticated: false, isLoading: typeof window === 'undefined' };
   });
 
   useEffect(() => {
-    const initAuth = () => {
-      const token = Cookies.get('auth-token');
-      if (token) {
-        const user = authService.getCurrentUserFromToken(token);
-        if (user) {
-          setState({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-          return;
-        }
+    const token = Cookies.get('auth-token');
+    if (token) {
+      const user = authService.getCurrentUserFromToken(token);
+      if (user) {
+        setState({ user, isAuthenticated: true, isLoading: false });
+      } else {
+        setState({ user: null, isAuthenticated: false, isLoading: false });
       }
-      setState(prev => ({ ...prev, isLoading: false }));
-    };
-
-    initAuth();
+    } else {
+      setState({ user: null, isAuthenticated: false, isLoading: false });
+    }
   }, []);
+
 
   const login = async (email: string, password: string) => {
     setState(prev => ({ ...prev, isLoading: true }));
     const user = await authService.login(email, password);
-    
+
     if (user) {
       setState({
         user,
