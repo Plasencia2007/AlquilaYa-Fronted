@@ -1,7 +1,7 @@
 import Navbar from '@/components/shared/Navbar';
 import Footer from '@/components/shared/Footer';
 
-export default function PublicLayout({
+export default function PrivateLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/features/auth/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "AlquilaYa",
-  description: "Encuentra tu próximo cuarto de forma rápida y segura",
+  title: "AlquilaYa — Encuentra tu cuarto ideal",
+  description: "Plataforma de alquiler de cuartos. Encuentra tu próximo hogar de forma rápida y segura.",
 };
 
 export default function RootLayout({
@@ -13,8 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className="antialiased font-sans">
-        {children}
+      <body className="antialiased">
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
