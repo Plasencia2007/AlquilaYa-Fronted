@@ -8,10 +8,15 @@
   
   --color-secondary: #0060ac;
   --color-secondary-container: #64a8fe;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #001d36;
   
   --color-tertiary: #7f2500;
   --color-tertiary-container: #a73400;
   
+  --color-primary-fixed: #dbe1ff;
+  --color-secondary-fixed: #d4e3ff;
+
   --color-background: #faf8ff;
   --color-on-background: #1a1b23;
   

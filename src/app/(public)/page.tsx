@@ -17,19 +17,19 @@ export default function Home() {
             className="w-full h-full object-cover" 
             src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/20"></div>
         </div>
 
         <div className="relative z-10 max-w-4xl animate-fade-in">
-          <span className="text-primary font-bold tracking-[0.2em] uppercase text-xs mb-4 block">
+          <span className="text-blue-300 font-bold tracking-[0.2em] uppercase text-xs mb-4 block">
             Curated Living for the Modern Professional
           </span>
-          <h1 className="text-5xl md:text-[5rem] font-extrabold leading-[1] tracking-tighter text-on-surface mb-8 max-w-2xl">
-            Encuentra tu próximo hogar con <span className="text-primary">AlquilaYa</span>.
+          <h1 className="text-5xl md:text-[5rem] font-extrabold leading-[1] tracking-tighter text-white mb-8 max-w-2xl">
+            Encuentra tu próximo hogar con <span className="text-blue-300">AlquilaYa</span>.
           </h1>
 
           {/* Glass Search Bar */}
-          <div className="bg-surface-container-lowest/85 backdrop-blur-[24px] p-2 rounded-2xl editorial-shadow flex flex-col md:flex-row gap-2 max-w-3xl border border-outline-variant/10">
+          <div className="bg-white/95 backdrop-blur-[24px] p-2 rounded-2xl editorial-shadow flex flex-col md:flex-row gap-2 max-w-3xl border border-white/20 shadow-2xl">
             <div className="flex-1 flex items-center px-4 gap-3 py-4 border-r border-outline-variant/20">
               <span className="material-symbols-outlined text-primary">location_on</span>
               <input 
