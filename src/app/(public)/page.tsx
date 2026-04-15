@@ -7,9 +7,10 @@ export default function Home() {
   const featuredProperties = MOCK_PROPERTIES.filter(p => p.available).slice(0, 3);
 
   return (
-    <main className="pt-24 min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       {/* ── Hero Section ── */}
-      <section className="relative min-h-[800px] flex items-center px-6 sm:px-12 overflow-hidden mb-12">
+      <section className="relative min-h-screen flex items-center px-6 sm:px-12 overflow-hidden mb-12">
+
         <div className="absolute inset-0 z-0">
           <img 
             alt="Modern living" 
