@@ -35,7 +35,7 @@ export default function LandlordLayout({
     }
 
     return () => window.removeEventListener('pageshow', handlePageShow);
-  }, [isAuthenticated, user, isLoading, isMounted, router]);
+  }, [estaAutenticado, usuario, cargando, isMounted, router]);
 
   // Bloqueo visual preventivo: No renderiza nada si hay dudas sobre la sesión o el rol
   if (!isMounted || cargando || !estaAutenticado || usuario?.rol !== 'PROVEEDOR') {

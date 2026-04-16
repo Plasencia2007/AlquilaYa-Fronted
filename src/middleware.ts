@@ -5,7 +5,8 @@ function decodeTokenPayload(token: string) {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
-    return JSON.parse(atob(parts[1]));
+    // Decodificar base64 (UTF-8 compatible)
+    return JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
   } catch {
     return null;
   }
@@ -16,58 +17,39 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const payload = token ? decodeTokenPayload(token) : null;
-  const role = payload?.role || null;
+  const rol = payload?.rol || null;
   const isExpired = payload ? payload.exp < Math.floor(Date.now() / 1000) : true;
-  const isAuthenticated = !!payload && !isExpired;
+  const estaAutenticado = !!payload && !isExpired;
 
-  let response: NextResponse;
+  let response: NextResponse | null = null;
 
-  // --- 1. Rutas de autenticación (/login, /register) ---
-  if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
-    if (isAuthenticated && role) {
-      if (role === 'ADMIN') {
-        response = NextResponse.redirect(new URL('/admin-master', request.url));
-      } else if (role === 'PROVEEDOR') {
-        response = NextResponse.redirect(new URL('/landlord/dashboard', request.url));
-      } else {
-        response = NextResponse.redirect(new URL('/', request.url));
-      }
-    } else {
-      response = NextResponse.next();
-    }
-  }
-  // --- 2. Rutas de administrador (/admin-master) ---
-  else if (pathname.startsWith('/admin-master')) {
-    if (!isAuthenticated) {
-      response = NextResponse.redirect(new URL('/login', request.url));
-    } else if (role !== 'ADMIN') {
+  // --- 1. Rutas privadas de administrador (/admin-master) ---
+  if (pathname.startsWith('/admin-master')) {
+    if (!estaAutenticado) {
       response = NextResponse.redirect(new URL('/', request.url));
-    } else {
-      response = NextResponse.next();
+    } else if (rol !== 'ADMIN') {
+      response = NextResponse.redirect(new URL('/', request.url));
     }
   }
-  // --- 3. Rutas de proveedor (/landlord) ---
+  // --- 2. Rutas privadas de proveedor (/landlord) ---
   else if (pathname.startsWith('/landlord')) {
-    if (!isAuthenticated) {
-      response = NextResponse.redirect(new URL('/login', request.url));
-    } else if (role !== 'PROVEEDOR') {
+    if (!estaAutenticado) {
       response = NextResponse.redirect(new URL('/', request.url));
-    } else {
-      response = NextResponse.next();
+    } else if (rol !== 'PROVEEDOR') {
+      response = NextResponse.redirect(new URL('/', request.url));
     }
   }
-  // --- 4. Rutas de estudiante (/student) ---
+  // --- 3. Rutas privadas de estudiante (/student) ---
   else if (pathname.startsWith('/student')) {
-    if (!isAuthenticated) {
-      response = NextResponse.redirect(new URL('/login', request.url));
-    } else if (role !== 'ESTUDIANTE') {
+    if (!estaAutenticado) {
       response = NextResponse.redirect(new URL('/', request.url));
-    } else {
-      response = NextResponse.next();
+    } else if (rol !== 'ESTUDIANTE') {
+      response = NextResponse.redirect(new URL('/', request.url));
     }
   }
-  // --- Rutas públicas ---
-  else {
+
+  // Si no hay redirección necesaria, continuar
+  if (!response) {
     response = NextResponse.next();
   }
 
@@ -89,6 +71,14 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - rooms (public assets)
+     */
     '/((?!api|_next/static|_next/image|favicon.ico|rooms).*)',
   ],
 };

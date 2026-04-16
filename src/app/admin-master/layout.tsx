@@ -10,7 +10,7 @@ export default function AdminMasterLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { estaAutenticado, usuario, cargando } = useAuth();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -20,23 +20,23 @@ export default function AdminMasterLayout({
 
   useEffect(() => {
     const handlePageShow = (event: PageTransitionEvent) => {
-      if (event.persisted && (!isAuthenticated || user?.role !== 'ADMIN')) {
-        router.replace('/login');
+      if (event.persisted && (!estaAutenticado || usuario?.rol !== 'ADMIN')) {
+        router.replace('/');
       }
     };
     window.addEventListener('pageshow', handlePageShow);
 
-    if (isMounted && !isLoading) {
-      if (!isAuthenticated || user?.role !== 'ADMIN') {
-        router.replace('/login');
+    if (isMounted && !cargando) {
+      if (!estaAutenticado || usuario?.rol !== 'ADMIN') {
+        router.replace('/');
       }
     }
 
     return () => window.removeEventListener('pageshow', handlePageShow);
-  }, [isAuthenticated, user, isLoading, isMounted, router]);
+  }, [estaAutenticado, usuario, cargando, isMounted, router]);
 
   // Bloqueo visual mientras se verifica la sesión para evitar que el contenido "parpadee" a intrusos
-  if (!isMounted || isLoading || !isAuthenticated || user?.role !== 'ADMIN') {
+  if (!isMounted || cargando || !estaAutenticado || usuario?.rol !== 'ADMIN') {
     return (
       <div className="fixed inset-0 z-[9999] bg-[#0b1222] flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
