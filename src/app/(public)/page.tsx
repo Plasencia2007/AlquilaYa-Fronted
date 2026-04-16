@@ -5,33 +5,33 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/useAuth';
 import { useAuthModal } from '@/features/auth/useAuthModal';
-import { MOCK_PROPERTIES } from '@/mocks';
+import { MOCK_PROPIEDADES } from '@/mocks/propiedades';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 
 export default function Home() {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { estaAutenticado, usuario, cargando } = useAuth();
   const { open: openAuthModal } = useAuthModal();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated && user) {
-      if (user.role === 'PROVEEDOR') {
+    if (!cargando && estaAutenticado && usuario) {
+      if (usuario.rol === 'PROVEEDOR') {
         router.replace('/landlord/dashboard');
-      } else if (user.role === 'ADMIN') {
+      } else if (usuario.rol === 'ADMIN') {
         router.replace('/admin-master');
       }
     }
-  }, [isAuthenticated, user, isLoading, router]);
+  }, [estaAutenticado, usuario, cargando, router]);
 
-  const featuredProperties = MOCK_PROPERTIES.filter(p => p.available).slice(0, 3);
+  const destacados = MOCK_PROPIEDADES.filter(p => p.disponible).slice(0, 3);
 
   // Solo mostramos el spinner si el rol requiere redirección inmediata (evita flicker)
-  const needsRedirect = user && (user.role === 'PROVEEDOR' || user.role === 'ADMIN');
+  const requiereRedireccion = usuario && (usuario.rol === 'PROVEEDOR' || usuario.rol === 'ADMIN');
 
-  if (!isLoading && isAuthenticated && needsRedirect) {
+  if (!cargando && estaAutenticado && requiereRedireccion) {
     return (
       <div className="fixed inset-0 z-[9999] bg-white flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
@@ -100,12 +100,12 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Large Hero Card (Bento Style) */}
-          {featuredProperties[0] && (
+          {destacados[0] && (
             <Card padding="none" className="md:col-span-2 relative aspect-[4/3] md:aspect-auto md:min-h-[600px] group" hoverable>
               <img 
-                src={featuredProperties[0].images[0]} 
+                src={destacados[0].imagenes[0]} 
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                alt={featuredProperties[0].title}
+                alt={destacados[0].titulo}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-on-surface/95 via-on-surface/40 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-6 md:p-12 text-white w-full flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
@@ -113,15 +113,15 @@ export default function Home() {
                   <Badge variant="secondary" className="mb-4 text-[10px] md:text-xs">
                     MÁS POPULAR
                   </Badge>
-                  <h3 className="text-2xl md:text-5xl font-black mb-3 leading-tight">{featuredProperties[0].title}</h3>
+                  <h3 className="text-2xl md:text-5xl font-black mb-3 leading-tight">{destacados[0].titulo}</h3>
                   <p className="flex items-center gap-2 opacity-90 text-sm md:text-lg">
-                    <span className="material-symbols-outlined text-sm md:text-lg">location_on</span> {featuredProperties[0].location}
+                    <span className="material-symbols-outlined text-sm md:text-lg">location_on</span> {destacados[0].ubicacion}
                   </p>
                 </div>
                 <div className="w-full md:w-auto flex justify-between md:flex-col items-center md:items-end gap-2 text-right shrink-0">
-                  <p className="text-2xl md:text-5xl font-black">S/ {featuredProperties[0].price}<span className="text-xs md:text-lg font-normal opacity-70">/mes</span></p>
+                  <p className="text-2xl md:text-5xl font-black">S/ {destacados[0].precio}<span className="text-xs md:text-lg font-normal opacity-70">/mes</span></p>
                   <Button variant="white" size="lg" className="px-8 md:px-10 rounded-xl" asChild>
-                    <Link href={`/property/${featuredProperties[0].id}`}>Ver detalles</Link>
+                    <Link href={`/property/${destacados[0].id}`}>Ver detalles</Link>
                   </Button>
                 </div>
               </div>
@@ -130,27 +130,27 @@ export default function Home() {
 
           {/* Stacked Vertical Cards */}
           <div className="flex flex-col gap-8">
-            {featuredProperties.slice(1, 3).map((property) => (
-              <Card key={property.id} padding="none" className="flex flex-col flex-1 group">
+            {destacados.slice(1, 3).map((propiedad) => (
+              <Card key={propiedad.id} padding="none" className="flex flex-col flex-1 group">
                 <div className="relative h-48 md:h-56 overflow-hidden">
-                  <img src={property.images[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={property.title} />
+                  <img src={propiedad.imagenes[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={propiedad.titulo} />
                   <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1 text-xs font-bold text-on-surface shadow-sm">
                     <span className="material-symbols-outlined text-yellow-500 text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                    {property.rating}
+                    {propiedad.calificacion}
                   </div>
                 </div>
                 <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start gap-2 mb-3">
-                      <h4 className="font-bold text-lg md:text-xl text-on-surface leading-tight">{property.title}</h4>
-                      <p className="font-black text-primary text-base md:text-lg whitespace-nowrap">S/ {property.price}</p>
+                      <h4 className="font-bold text-lg md:text-xl text-on-surface leading-tight">{propiedad.titulo}</h4>
+                      <p className="font-black text-primary text-base md:text-lg whitespace-nowrap">S/ {propiedad.precio}</p>
                     </div>
                     <p className="text-xs md:text-sm text-on-surface-variant flex items-center gap-1">
                       <span className="material-symbols-outlined text-xs md:text-sm text-outline">location_on</span>
-                      {property.location}
+                      {propiedad.ubicacion}
                     </p>
                   </div>
-                  <Link href={`/property/${property.id}`} className="text-primary font-bold flex items-center gap-1 hover:underline mt-6 text-xs md:text-sm group/btn">
+                  <Link href={`/property/${propiedad.id}`} className="text-primary font-bold flex items-center gap-1 hover:underline mt-6 text-xs md:text-sm group/btn">
                     Conocer más <span className="material-symbols-outlined text-xs md:text-sm transition-transform group-hover/btn:translate-x-1">chevron_right</span>
                   </Link>
                 </div>
@@ -184,11 +184,11 @@ export default function Home() {
               size="xl" 
               className="w-full rounded-xl"
               onClick={() => {
-                if (!isAuthenticated) openAuthModal('register');
+                if (!estaAutenticado) openAuthModal('register');
                 else router.push('/search');
               }}
             >
-              {isAuthenticated ? 'Explorar' : 'Empezar a buscar'}
+              {estaAutenticado ? 'Explorar' : 'Empezar a buscar'}
             </Button>
           </Card>
 

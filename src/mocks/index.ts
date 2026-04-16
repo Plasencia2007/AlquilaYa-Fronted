@@ -1,3 +1,3 @@
-export * from './users';
-export * from './properties';
+export * from './usuarios';
+export * from './propiedades';
 export * from './admin';

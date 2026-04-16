@@ -2,9 +2,9 @@
 
 import StatsCard from '@/components/admin/StatsCard';
 import StatusBadge from '@/components/admin/StatusBadge';
-import { ADMIN_METRICS, RECENT_ACTIVITIES } from '@/mocks';
+import { METRICAS_ADMIN, ACTIVIDADES_RECIENTES } from '@/mocks';
 
-const METRIC_ICONS = ['group', 'apartment', 'calendar_check', 'payments'];
+const ICONOS_METRICAS = ['group', 'apartment', 'calendar_check', 'payments'];
 
 export default function AdminDashboard() {
   return (
@@ -29,11 +29,11 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {ADMIN_METRICS.map((metric, i) => (
+        {METRICAS_ADMIN.map((metrica, i) => (
           <StatsCard 
-            key={metric.label} 
-            {...metric} 
-            icon={METRIC_ICONS[i]} 
+            key={metrica.etiqueta} 
+            {...metrica} 
+            icon={ICONOS_METRICAS[i]} 
           />
         ))}
       </div>
@@ -56,24 +56,24 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/5">
-              {RECENT_ACTIVITIES.map(activity => (
-                <tr key={activity.id} className="hover:bg-surface-container-low/50 transition-colors group">
+              {ACTIVIDADES_RECIENTES.map(actividad => (
+                <tr key={actividad.id} className="hover:bg-surface-container-low/50 transition-colors group">
                   <td className="px-8 py-5 text-sm font-bold text-on-surface leading-snug max-w-md">
-                    {activity.description}
+                    {actividad.descripcion}
                   </td>
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-secondary-container/30 rounded-full flex items-center justify-center text-[10px] font-black text-on-secondary-container">
-                        {activity.user.charAt(0)}
+                        {actividad.usuario.charAt(0)}
                       </div>
-                      <span className="text-sm font-medium text-on-surface-variant">{activity.user}</span>
+                      <span className="text-sm font-medium text-on-surface-variant">{actividad.usuario}</span>
                     </div>
                   </td>
                   <td className="px-8 py-5">
-                    <StatusBadge status={activity.status as any} />
+                    <StatusBadge status={actividad.estado as any} />
                   </td>
                   <td className="px-8 py-5 text-xs text-outline font-medium">
-                    {activity.timestamp}
+                    {actividad.fechaHora}
                   </td>
                 </tr>
               ))}
@@ -84,4 +84,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

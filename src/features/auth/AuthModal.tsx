@@ -13,12 +13,12 @@ function cn(...inputs: ClassValue[]) {
 
 export default function AuthModal() {
   const { isOpen, view, close, toggleView } = useAuthModal();
-  const { login } = useAuth();
+  const { iniciarSesion } = useAuth();
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [correo, setCorreo] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [mostrarContrasena, setMostrarContrasena] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Sync animation state when view changes
@@ -32,12 +32,15 @@ export default function AuthModal() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt', { email, password });
+    const exito = await iniciarSesion(correo, contrasena);
+    if (exito) {
+      close();
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Register attempt', { name, email, password });
+    console.log('Intento de registro', { nombre, correo, contrasena });
   };
 
   return (
@@ -95,8 +98,8 @@ export default function AuthModal() {
                 <input
                   type="email"
                   placeholder="Correo electrónico"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
                   className="w-full bg-[#f2ede9] text-[#1d1b19] placeholder:text-[#bda5a8] rounded-xl pl-12 pr-4 py-3.5 text-sm border border-transparent focus:border-[#8f0304] focus:bg-white transition-all outline-none"
                 />
               </div>
@@ -104,18 +107,18 @@ export default function AuthModal() {
               <div className="relative group">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#bda5a8] group-focus-within:text-[#8f0304] transition-colors text-[20px]">lock</span>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={mostrarContrasena ? "text" : "password"}
                   placeholder="Contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
                   className="w-full bg-[#f2ede9] text-[#1d1b19] placeholder:text-[#bda5a8] rounded-xl pl-12 pr-12 py-3.5 text-sm border border-transparent focus:border-[#8f0304] focus:bg-white transition-all outline-none"
                 />
                 <button 
                   type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setMostrarContrasena(!mostrarContrasena)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#bda5a8] hover:text-[#8f0304] transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                  <span className="material-symbols-outlined text-[20px]">{mostrarContrasena ? 'visibility_off' : 'visibility'}</span>
                 </button>
               </div>
 
@@ -163,8 +166,8 @@ export default function AuthModal() {
                 <input
                   type="text"
                   placeholder="Nombre completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
                   className="w-full bg-[#f2ede9] text-[#1d1b19] placeholder:text-[#bda5a8] rounded-xl pl-12 pr-4 py-3.5 text-sm border border-transparent focus:border-[#8f0304] focus:bg-white transition-all outline-none"
                 />
               </div>
@@ -174,8 +177,8 @@ export default function AuthModal() {
                 <input
                   type="email"
                   placeholder="Correo electrónico"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
                   className="w-full bg-[#f2ede9] text-[#1d1b19] placeholder:text-[#bda5a8] rounded-xl pl-12 pr-4 py-3.5 text-sm border border-transparent focus:border-[#8f0304] focus:bg-white transition-all outline-none"
                 />
               </div>
@@ -183,10 +186,10 @@ export default function AuthModal() {
               <div className="relative group">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#bda5a8] group-focus-within:text-[#8f0304] transition-colors text-[20px]">lock</span>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={mostrarContrasena ? "text" : "password"}
                   placeholder="Contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
                   className="w-full bg-[#f2ede9] text-[#1d1b19] placeholder:text-[#bda5a8] rounded-xl pl-12 pr-12 py-3.5 text-sm border border-transparent focus:border-[#8f0304] focus:bg-white transition-all outline-none"
                 />
               </div>

@@ -2,15 +2,16 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/useAuth';
 import { useAuthModal } from '@/features/auth/useAuthModal';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { usuario, estaAutenticado, cerrarSesion, cargando } = useAuth();
   const { open: openAuthModal } = useAuthModal();
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -88,12 +89,12 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        {!isMounted || isLoading ? (
+        {!isMounted || cargando ? (
           /* ── Skeleton Loading State ── */
           <div className="flex gap-4 items-center">
             <div className="w-20 h-4 bg-white/5 rounded-full animate-pulse" />
           </div>
-        ) : isAuthenticated && user ? (
+        ) : estaAutenticado && usuario ? (
           /* ── User Profile Menu ── */
           <div className="relative" ref={menuRef}>
             <button
@@ -101,10 +102,10 @@ export default function Navbar() {
               className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10 hover:shadow-md transition-all group"
             >
               <div className="w-6 h-6 bg-primary text-on-primary rounded-full flex items-center justify-center text-[10px] font-bold shadow-inner">
-                {user.name.charAt(0).toUpperCase()}
+                {usuario?.nombre.charAt(0).toUpperCase()}
               </div>
               <span className="hidden sm:block text-[10px] font-black tracking-widest text-on-background group-hover:text-primary">
-                {user.name.split(' ')[0].toUpperCase()}
+                {usuario?.nombre.split(' ')[0].toUpperCase()}
               </span>
               <ChevronDown className={`w-3 h-3 text-on-background/40 transition-transform duration-300 ${menuOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -112,11 +113,11 @@ export default function Navbar() {
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-surface-variant rounded-xl shadow-2xl border border-white/5 py-2 animate-scale-in overflow-hidden z-[70] glass-nav">
                 <div className="px-4 py-2 border-b border-white/5 mb-1">
-                  <p className="text-xs font-bold text-on-surface">{user.name}</p>
-                  <p className="text-[10px] text-on-surface-variant">{user.email}</p>
+                  <p className="text-xs font-bold text-on-surface">{usuario?.nombre}</p>
+                  <p className="text-[10px] text-on-surface-variant">{usuario?.correo}</p>
                 </div>
 
-                {user.role === 'PROVEEDOR' ? (
+                {usuario?.rol === 'PROVEEDOR' ? (
                   <Link href="/landlord/dashboard"
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
@@ -156,7 +157,7 @@ export default function Navbar() {
                 </Link>
 
                 <button
-                  onClick={() => { logout(); setMenuOpen(false); }}
+                  onClick={() => { cerrarSesion(); setMenuOpen(false); }}
                   className="flex items-center gap-2 w-full px-4 py-2 text-xs font-medium text-primary hover:bg-primary/10 transition-colors mt-1"
                 >
                   <span className="material-symbols-outlined text-[18px]">logout</span>
@@ -275,7 +276,7 @@ export default function Navbar() {
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10 bg-white min-h-0">
-              {!isAuthenticated && (
+              {!estaAutenticado && (
                 <>
                   {/* Guest Header (White Theme) */}
                   <div className="space-y-4">
@@ -323,18 +324,18 @@ export default function Navbar() {
                 </>
               )}
 
-              {isAuthenticated && user && (
+              {estaAutenticado && usuario && (
                 <div className="flex flex-col gap-6">
                   <div className="bg-slate-50 p-6 rounded-2xl flex items-center gap-4 mb-4">
                     <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center font-black text-white text-xl">
-                      {user.name.charAt(0).toUpperCase()}
+                      {usuario.nombre.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 text-lg">{user.name}</p>
-                      <p className="text-sm text-slate-500 truncate w-48">{user.email}</p>
+                      <p className="font-bold text-slate-900 text-lg">{usuario.nombre}</p>
+                      <p className="text-sm text-slate-500 truncate w-48">{usuario.correo}</p>
                     </div>
                   </div>
-                  {user.role === 'PROVEEDOR' ? (
+                  {usuario.rol === 'PROVEEDOR' ? (
                     <Link href="/landlord/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-lg font-bold text-slate-900 py-3">
                       <span className="material-symbols-outlined text-slate-400">dashboard</span> PANEL DE CONTROL
                     </Link>
@@ -358,7 +359,7 @@ export default function Navbar() {
                       ))}
                     </div>
                   )}
-                  <button onClick={() => { logout(); setMobileOpen(false); }} className="flex items-center gap-4 text-lg font-bold text-primary text-left py-3 mt-4">
+                  <button onClick={() => { cerrarSesion(); setMobileOpen(false); }} className="flex items-center gap-4 text-lg font-bold text-primary text-left py-3 mt-4">
                     <span className="material-symbols-outlined font-black">logout</span> CERRAR SESIÓN
                   </button>
                 </div>

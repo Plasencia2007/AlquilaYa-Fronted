@@ -1,13 +1,13 @@
 interface StatsCardProps {
-  label: string;
-  value: string;
-  change: number;
-  changeLabel: string;
+  etiqueta: string;
+  valor: string;
+  cambio: number;
+  etiquetaCambio: string;
   icon: string;
 }
 
-export default function StatsCard({ label, value, change, changeLabel, icon }: StatsCardProps) {
-  const isPositive = change >= 0;
+export default function StatsCard({ etiqueta, valor, cambio, etiquetaCambio, icon }: StatsCardProps) {
+  const esPositivo = cambio >= 0;
 
   return (
     <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-[2rem] p-6 hover:shadow-lg transition-all duration-500 group">
@@ -18,24 +18,23 @@ export default function StatsCard({ label, value, change, changeLabel, icon }: S
           </span>
         </div>
         <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 ${
-          isPositive 
+          esPositivo 
             ? 'bg-success-container/10 text-success border border-success/10' 
             : 'bg-error-container/10 text-error border border-error/10'
         }`}>
           <span className="material-symbols-outlined text-[14px]">
-            {isPositive ? 'trending_up' : 'trending_down'}
+            {esPositivo ? 'trending_up' : 'trending_down'}
           </span>
-          {isPositive ? '+' : ''}{change}%
+          {esPositivo ? '+' : ''}{cambio}%
         </div>
       </div>
       
-      <p className="text-3xl font-black text-on-surface tracking-tighter mb-1 font-heading">{value}</p>
+      <p className="text-3xl font-black text-on-surface tracking-tighter mb-1 font-heading">{valor}</p>
       <div className="flex items-center gap-2">
-        <p className="text-xs font-bold text-outline uppercase tracking-widest">{label}</p>
+        <p className="text-xs font-bold text-outline uppercase tracking-widest">{etiqueta}</p>
         <span className="w-1 h-1 bg-outline/20 rounded-full"></span>
-        <p className="text-[10px] font-medium text-on-surface-variant opacity-60">{changeLabel}</p>
+        <p className="text-[10px] font-medium text-on-surface-variant opacity-60">{etiquetaCambio}</p>
       </div>
     </div>
   );
 }
-

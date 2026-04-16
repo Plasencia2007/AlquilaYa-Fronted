@@ -1,24 +1,26 @@
-export type UserRole = 'ESTUDIANTE' | 'PROVEEDOR' | 'ADMIN';
+export type RolUsuario = 'ESTUDIANTE' | 'PROVEEDOR' | 'ADMIN';
 
-export interface User {
+export interface Usuario {
   id: string;
-  name: string;
-  email: string;
-  role: UserRole;
+  nombre: string;
+  correo: string;
+  rol: RolUsuario;
   avatar?: string;
+  telefono?: string;
+  biografia?: string;
 }
 
-export interface JWTPayload {
+export interface PayloadJWT {
   sub: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  exp: number;
+  correo: string;
+  nombre: string;
+  rol: RolUsuario;
   iat: number;
+  exp: number;
 }
 
-export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
+export interface EstadoAuth {
+  usuario: Usuario | null;
+  estaAutenticado: boolean;
+  cargando: boolean;
 }

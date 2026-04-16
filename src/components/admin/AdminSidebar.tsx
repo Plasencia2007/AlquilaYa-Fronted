@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/useAuth';
-import { SIDEBAR_METRICS } from '@/mocks/admin';
+import { METRICAS_LATERALES } from '@/mocks/admin';
 import { cn } from '@/utils/cn';
 
 interface NavSubItem {
@@ -45,7 +45,7 @@ const NAVIGATION: NavCategory[] = [
       {
         label: 'Proveedores',
         icon: 'person_search',
-        badge: SIDEBAR_METRICS.providersPending,
+        badge: METRICAS_LATERALES.proveedoresPendientes,
         subItems: [
           { label: 'Pendientes de aprob.', href: '/admin-master/validations/providers/pending' },
           { label: 'Verificados', href: '/admin-master/validations/providers/verified' },
@@ -55,7 +55,7 @@ const NAVIGATION: NavCategory[] = [
       {
         label: 'Auditoría inmuebles',
         icon: 'home_work',
-        badge: SIDEBAR_METRICS.propertiesToReview,
+        badge: METRICAS_LATERALES.inmueblesPorRevisar,
         subItems: [
           { label: 'Cuartos por revisar', href: '/admin-master/properties/to-review' },
           { label: 'Historial de decisiones', href: '/admin-master/properties/history' },
@@ -82,7 +82,7 @@ const NAVIGATION: NavCategory[] = [
       {
         label: 'Reportes y denuncias',
         icon: 'report',
-        badge: SIDEBAR_METRICS.reportsPending,
+        badge: METRICAS_LATERALES.denunciasPendientes,
         subItems: [
           { label: 'Sin gestionar', href: '/admin-master/reports/pending' },
           { label: 'Baneos activos', href: '/admin-master/reports/active-bans' },
@@ -124,7 +124,7 @@ const NAVIGATION: NavCategory[] = [
       {
         label: 'Anuncios premium',
         icon: 'grade',
-        badge: SIDEBAR_METRICS.premiumAds,
+        badge: METRICAS_LATERALES.anunciosPremium,
         subItems: [
           { label: 'Proveedores destacados', href: '/admin-master/marketing/premium' },
         ],
@@ -137,7 +137,7 @@ const NAVIGATION: NavCategory[] = [
       {
         label: 'Economía y Pagos',
         icon: 'payments',
-        badge: SIDEBAR_METRICS.financePending,
+        badge: METRICAS_LATERALES.finanzasPendientes,
         subItems: [
           { label: 'Balance general', href: '/admin-master/finance/balance' },
           { label: 'Pagos a proveedores', href: '/admin-master/finance/payouts' },
@@ -147,7 +147,7 @@ const NAVIGATION: NavCategory[] = [
       {
         label: 'Configuración del Sistema',
         icon: 'settings_suggest',
-        badge: SIDEBAR_METRICS.systemAlerts,
+        badge: METRICAS_LATERALES.alertasSistema,
         subItems: [
           { label: 'Reglas de la plataforma', href: '/admin-master/system/settings' },
           { label: 'Roles y permisos', href: '/admin-master/system/roles' },
@@ -161,7 +161,7 @@ const NAVIGATION: NavCategory[] = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { usuario, cerrarSesion } = useAuth();
   const [expandedItems, setExpandedItems] = useState<string[]>(['Análisis global', 'Proveedores']);
 
   const toggleItem = (label: string) => {
@@ -171,7 +171,7 @@ export default function AdminSidebar() {
   };
 
   const handleLogout = () => {
-    logout();
+    cerrarSesion();
     window.location.replace('/');
   };
 
@@ -282,7 +282,7 @@ export default function AdminSidebar() {
               <span className="text-primary text-xs font-black">AD</span>
             </div>
             <div>
-              <p className="text-xs font-black text-white tracking-tight">Admin master</p>
+              <p className="text-xs font-black text-white tracking-tight">{usuario?.nombre || 'Admin Master'}</p>
               <p className="text-[10px] text-[#64748b] font-bold">God view activo</p>
             </div>
           </div>
@@ -297,5 +297,3 @@ export default function AdminSidebar() {
     </aside>
   );
 }
-
-

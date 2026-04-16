@@ -2,59 +2,59 @@
 
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
-import { User, AuthState } from '@/types/auth';
-import { authService } from './authService';
+import { Usuario, EstadoAuth } from '@/types/auth';
+import { servicioAuth } from './servicioAuth';
 
-interface AuthActions {
-  login: (email: string, password: string) => Promise<User | null>;
-  logout: () => void;
-  initialize: () => void;
-  reset: () => void;
+interface AccionesAuth {
+  iniciarSesion: (correo: string, contrasena: string) => Promise<Usuario | null>;
+  cerrarSesion: () => void;
+  inicializar: () => void;
+  reiniciar: () => void;
 }
 
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
+const estadoInicial: EstadoAuth = {
+  usuario: null,
+  estaAutenticado: false,
+  cargando: true,
 };
 
-export const useAuthStore = create<AuthState & AuthActions>((set) => ({
-  ...initialState,
+export const useAuthStore = create<EstadoAuth & AccionesAuth>((set) => ({
+  ...estadoInicial,
 
-  initialize: () => {
+  inicializar: () => {
     const token = Cookies.get('auth-token');
     if (token) {
-      const user = authService.getCurrentUserFromToken(token);
-      if (user) {
-        set({ user, isAuthenticated: true, isLoading: false });
+      const usuario = servicioAuth.obtenerUsuarioActualDesdeToken(token);
+      if (usuario) {
+        set({ usuario, estaAutenticado: true, cargando: false });
         return;
       }
     }
-    set({ user: null, isAuthenticated: false, isLoading: false });
+    set({ usuario: null, estaAutenticado: false, cargando: false });
   },
 
-  login: async (email: string, password: string) => {
-    set({ isLoading: true });
+  iniciarSesion: async (correo: string, contrasena: string) => {
+    set({ cargando: true });
     try {
-      const user = await authService.login(email, password);
-      if (user) {
-        set({ user, isAuthenticated: true, isLoading: false });
-        return user;
+      const usuario = await servicioAuth.iniciarSesion(correo, contrasena);
+      if (usuario) {
+        set({ usuario, estaAutenticado: true, cargando: false });
+        return usuario;
       }
-      set({ isLoading: false });
+      set({ cargando: false });
       return null;
     } catch (error) {
-      set({ isLoading: false });
+      set({ cargando: false });
       return null;
     }
   },
 
-  logout: () => {
-    authService.logout();
-    set({ ...initialState, isLoading: false });
+  cerrarSesion: () => {
+    servicioAuth.cerrarSesion();
+    set({ ...estadoInicial, cargando: false });
   },
 
-  reset: () => {
-    set(initialState);
+  reiniciar: () => {
+    set(estadoInicial);
   },
 }));

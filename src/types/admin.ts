@@ -1,15 +1,15 @@
-export interface AdminMetric {
-  label: string;
-  value: string;
-  change: number;
-  changeLabel: string;
+export interface MetricaAdmin {
+  etiqueta: string;
+  valor: string;
+  cambio: number;
+  etiquetaCambio: string;
 }
 
-export interface RecentActivity {
+export interface ActividadReciente {
   id: string;
-  type: 'reserva' | 'registro' | 'verificacion' | 'alerta';
-  description: string;
-  user: string;
-  timestamp: string;
-  status: 'activo' | 'pendiente' | 'critico';
+  tipo: 'reserva' | 'registro' | 'verificacion' | 'alerta';
+  descripcion: string;
+  usuario: string;
+  fechaHora: string;
+  estado: 'ACTIVO' | 'PENDIENTE' | 'CRITICO';
 }

@@ -1,19 +1,19 @@
 interface StatusBadgeProps {
-  status: 'activo' | 'pendiente' | 'critico';
+  status: 'ACTIVO' | 'PENDIENTE' | 'CRITICO';
 }
 
 const STATUS_CONFIG = {
-  activo: {
+  ACTIVO: {
     base: 'bg-success/5 text-success border-success/10',
     dot: 'bg-success',
     label: 'Activo'
   },
-  pendiente: {
+  PENDIENTE: {
     base: 'bg-warning/5 text-warning border-warning/10',
     dot: 'bg-warning',
     label: 'Pendiente'
   },
-  critico: {
+  CRITICO: {
     base: 'bg-error/5 text-error border-error/10',
     dot: 'bg-error',
     label: 'Crítico'
@@ -30,4 +30,3 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
     </span>
   );
 }
-
