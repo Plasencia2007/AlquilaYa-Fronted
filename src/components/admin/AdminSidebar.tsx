@@ -29,6 +29,11 @@ const NAVIGATION: NavCategory[] = [
   {
     items: [
       {
+        label: 'Panel de Control',
+        icon: 'dashboard',
+        href: '/admin-master',
+      },
+      {
         label: 'Análisis global',
         icon: 'grid_view',
         subItems: [
@@ -178,17 +183,15 @@ export default function AdminSidebar() {
   return (
     <aside className="fixed left-0 top-0 h-screen w-[280px] bg-[#0b1222] border-r border-[#1e293b] flex flex-col z-[60] overflow-hidden">
       {/* Logo Section */}
-      <div className="px-6 py-5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/20 border border-primary/30 rounded-xl flex items-center justify-center shadow-lg shadow-primary/5">
-            <span className="material-symbols-outlined text-primary text-2xl">home</span>
-          </div>
-          <div>
-            <p className="text-xl font-black text-white tracking-tighter leading-none">AlquilaYa</p>
-            <p className="text-[10px] font-bold text-outline uppercase tracking-[0.2em] mt-1 opacity-60">Torre de Control</p>
-          </div>
+      <Link href="/admin-master" className="px-6 py-5 flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <div className="w-10 h-10 bg-primary/20 border border-primary/30 rounded-xl flex items-center justify-center shadow-lg shadow-primary/5">
+          <span className="material-symbols-outlined text-primary text-2xl">home</span>
         </div>
-      </div>
+        <div>
+          <p className="text-xl font-black text-white tracking-tighter leading-none">AlquilaYa</p>
+          <p className="text-[10px] font-bold text-outline uppercase tracking-[0.2em] mt-1 opacity-60">Torre de Control</p>
+        </div>
+      </Link>
 
 
 
@@ -204,6 +207,24 @@ export default function AdminSidebar() {
 
                 return (
                   <div key={item.label} className="space-y-1">
+                    {/* Item directo (sin subItems) */}
+                    {!hasSubItems && item.href ? (
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200",
+                          pathname === item.href
+                            ? "bg-primary text-white"
+                            : "text-[#94a3b8] hover:bg-[#1e293b] hover:text-white"
+                        )}
+                      >
+                        <span className="material-symbols-outlined text-[20px] opacity-80">
+                          {item.icon}
+                        </span>
+                        <span className="text-sm font-bold tracking-tight">{item.label}</span>
+                      </Link>
+                    ) : (
+                    /* Item con acordeón (con subItems) */
                     <button
                       onClick={() => toggleItem(item.label)}
                       className={cn(
@@ -239,6 +260,7 @@ export default function AdminSidebar() {
                         )}
                       </div>
                     </button>
+                    )}
 
                     {/* Sub Items Accordion */}
                     {hasSubItems && isExpanded && (
