@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/features/auth/AuthProvider';
+import { useAuth } from '@/features/auth/useAuth';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
 export default function AdminMasterLayout({
@@ -19,21 +19,32 @@ export default function AdminMasterLayout({
   }, []);
 
   useEffect(() => {
-    // Protección de cliente: Si no es ADMIN o no está autenticado, fuera
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted && (!isAuthenticated || user?.role !== 'ADMIN')) {
+        router.replace('/login');
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+
     if (isMounted && !isLoading) {
       if (!isAuthenticated || user?.role !== 'ADMIN') {
         router.replace('/login');
       }
     }
+
+    return () => window.removeEventListener('pageshow', handlePageShow);
   }, [isAuthenticated, user, isLoading, isMounted, router]);
 
   // Bloqueo visual mientras se verifica la sesión para evitar que el contenido "parpadee" a intrusos
   if (!isMounted || isLoading || !isAuthenticated || user?.role !== 'ADMIN') {
     return (
-      <div className="fixed inset-0 bg-background flex items-center justify-center z-[9999]">
-        <div className="flex flex-col items-center gap-4">
+      <div className="fixed inset-0 z-[9999] bg-[#0b1222] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
           <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] animate-pulse">Protección Admin Activa</p>
+          <div className="text-center">
+            <p className="text-[11px] font-black text-primary uppercase tracking-[0.3em] animate-pulse">Sincronizando Torre de Control</p>
+            <p className="text-[9px] text-[#64748b] font-bold mt-2 uppercase tracking-widest">Protección Admin Activa</p>
+          </div>
         </div>
       </div>
     );

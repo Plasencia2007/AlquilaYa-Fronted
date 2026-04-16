@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useAuth } from '@/features/auth/AuthProvider';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/features/auth/useAuth';
 import { SIDEBAR_METRICS } from '@/mocks/admin';
 import { cn } from '@/utils/cn';
 
@@ -160,6 +160,7 @@ const NAVIGATION: NavCategory[] = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [expandedItems, setExpandedItems] = useState<string[]>(['Análisis global', 'Proveedores']);
 
@@ -167,6 +168,11 @@ export default function AdminSidebar() {
     setExpandedItems(prev => 
       prev.includes(label) ? [] : [label]
     );
+  };
+
+  const handleLogout = () => {
+    logout();
+    window.location.replace('/');
   };
 
   return (
@@ -241,6 +247,7 @@ export default function AdminSidebar() {
                           <Link
                             key={subItem.href}
                             href={subItem.href}
+                            replace
                             className={cn(
                               "block py-1.5 text-xs font-bold transition-all hover:text-white",
                               pathname === subItem.href
@@ -280,7 +287,7 @@ export default function AdminSidebar() {
             </div>
           </div>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-8 h-8 rounded-full flex items-center justify-center text-[#64748b] hover:bg-red-500/10 hover:text-red-500 transition-all"
           >
             <span className="material-symbols-outlined text-[20px]">logout</span>

@@ -1,41 +1,48 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── Paleta Editorial Urban Living (Mockup) ── */
-  --color-primary: #0037b1;
-  --color-primary-container: #1e4ed8;
+  /* ── Nueva Paleta de Colores AlquilaYa ── */
+  --color-primary: #bb0506;
+  /* Color principal de acción (Rojo vibrante) */
+  --color-primary-container: #900304;
+  /* Color primario oscuro (Rojo profundo) */
   --color-on-primary: #ffffff;
-  
-  --color-secondary: #0060ac;
-  --color-secondary-container: #64a8fe;
+  /* Texto sobre color primario */
+
+  --color-secondary: #c0494b;
+  /* Color secundario/acento (Rojo coral) */
+  --color-secondary-container: #d29c9a;
+  /* Color secundario suave (Rosa pálido) */
   --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #001d36;
-  
-  --color-tertiary: #7f2500;
-  --color-tertiary-container: #a73400;
-  
-  --color-primary-fixed: #dbe1ff;
-  --color-secondary-fixed: #d4e3ff;
 
-  --color-background: #faf8ff;
-  --color-on-background: #1a1b23;
-  
-  --color-surface: #faf8ff;
-  --color-on-surface: #1a1b23;
-  --color-surface-variant: #e2e1ed;
-  --color-on-surface-variant: #434655;
-  
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f2fe;
-  --color-surface-container: #ededf9;
-  --color-surface-container-high: #e8e7f3;
-  --color-surface-container-highest: #e2e1ed;
+  --color-tertiary: #d29c9a;
+  /* Color terciario de apoyo (Rosa pálido) */
 
-  --color-outline: #747686;
-  --color-outline-variant: #c4c5d7;
-  
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
+  --color-background: #29131b;
+  /* Color de fondo principal (Borgoña oscuro) */
+  --color-on-background: rgba(226, 225, 223, 1.000);
+  /* Color de texto principal (Gris claro/Hueso) */
+
+  --color-surface: #29131b;
+  /* Color de superficies (Fondo oscuro) */
+  --color-on-surface: rgba(226, 225, 223, 1.000);
+  /* Texto sobre superficies */
+  --color-surface-variant: #373a52;
+  /* Color para superficies secundarias (Azul grisáceo) */
+  --color-on-surface-variant: rgba(226, 225, 223, 0.8);
+
+  --color-surface-container-lowest: #29131b;
+  --color-surface-container-low: #2d1620;
+  --color-surface-container: #373a52;
+  --color-surface-container-high: #3f425e;
+  --color-surface-container-highest: #4b4e6b;
+
+  --color-outline: #7d7f8e;
+  /* Color de bordes y separadores (Gris neutro) */
+  --color-outline-variant: #373a52;
+
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
 
   /* ── Tipografía ── */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -47,7 +54,6 @@
   --foreground: var(--color-on-background);
 }
 
-/* ── Capa Base ── */
 @layer base {
   * {
     margin: 0;
@@ -64,7 +70,11 @@
     min-height: 100vh;
   }
 
-  h1, h2, h3, h4, .brand-logo {
+  h1,
+  h2,
+  h3,
+  h4,
+  .brand-logo {
     font-family: var(--font-headline);
   }
 }
@@ -103,18 +113,39 @@
 
   /* Animaciones */
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   .animate-fade-in {
@@ -129,4 +160,3 @@
     animation: scaleIn 0.2s ease-out forwards;
   }
 }
-

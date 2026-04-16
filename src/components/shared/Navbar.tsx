@@ -2,138 +2,322 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/features/auth/AuthProvider';
-import { Menu, X, User, LogOut, ShieldCheck, ChevronDown } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/features/auth/useAuth';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const [guestMenuOpen, setGuestMenuOpen] = useState(false);
+  const guestMenuRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Manejadores de hover con retardo para suavidad
+  const handleMouseEnter = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    setGuestMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setGuestMenuOpen(false);
+    }, 100); // 300ms de gracia para mover el ratón
+  };
+
+  // Rutas donde el Navbar principal NO debe aparecer
+  // Usamos safe check para evitar crash si pathname es nulo durante la hidratación
+  const hiddenRoutes = ['/login', '/register', '/admin-master', '/landlord'];
+  const isHidden = pathname ? hiddenRoutes.some(route => pathname.startsWith(route)) : false;
+
   useEffect(() => {
     setIsMounted(true);
+
+    const handlePageShow = () => {
+      setIsMounted(true);
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
       }
+      if (guestMenuRef.current && !guestMenuRef.current.contains(event.target as Node)) {
+        setGuestMenuOpen(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('pageshow', handlePageShow);
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
   }, []);
 
+  if (isHidden) return null;
+
   return (
-    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-outline-variant/10 px-6 sm:px-12 py-4 flex justify-between items-center transition-all duration-300 editorial-shadow">
+    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-primary/10 px-6 sm:px-12 py-3.5 flex justify-between items-center transition-all duration-300 editorial-shadow">
       {/* ── Left Side: Logo & Navigation ── */}
       <div className="flex items-center gap-12">
         <Link href="/" className="flex items-center gap-2 group transition-transform active:scale-95">
-          <span className="text-2xl font-black tracking-tighter text-primary">
+          <span className="text-xl font-black tracking-tighter text-primary">
             Alquila<span className="text-primary-container">Ya</span>
           </span>
         </Link>
 
-        <div className="hidden md:flex gap-8 items-center">
-          <Link href="/search" className="text-primary font-['Manrope'] font-bold tracking-tight border-b-2 border-primary pb-1 transition-all">
-            Explorar Cuartos
+        <div className="hidden md:flex gap-12 items-center ml-4">
+          <Link href="/" className={`font-['Manrope'] font-black text-xs tracking-[0.2em] transition-all ${pathname === '/' ? 'text-primary' : 'text-white hover:text-primary'}`}>
+            INICIO
           </Link>
-          <Link href="#" className="text-on-surface-variant font-['Manrope'] font-bold tracking-tight hover:text-primary transition-all duration-300">
-            Para Estudiantes
+          <Link href="/search" className={`font-['Manrope'] font-black text-xs tracking-[0.2em] transition-all ${pathname === '/search' ? 'text-primary' : 'text-white hover:text-primary'}`}>
+            EXPLORAR
           </Link>
-          <Link href="#" className="text-on-surface-variant font-['Manrope'] font-bold tracking-tight hover:text-primary transition-all duration-300">
-            Para Proveedores
+          <Link href="#" className="font-['Manrope'] font-black text-xs tracking-[0.2em] text-white hover:text-primary transition-all">
+            GARANTÍA
           </Link>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        {isMounted && isAuthenticated && user ? (
+        {!isMounted || isLoading ? (
+          /* ── Skeleton Loading State ── */
+          <div className="flex gap-4 items-center">
+            <div className="w-20 h-4 bg-white/5 rounded-full animate-pulse" />
+          </div>
+        ) : isAuthenticated && user ? (
+          /* ── User Profile Menu ── */
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-full border border-outline-variant/20 hover:shadow-md transition-all group"
+              className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10 hover:shadow-md transition-all group"
             >
-              <div className="w-8 h-8 bg-primary text-on-primary rounded-full flex items-center justify-center text-sm font-bold shadow-inner">
+              <div className="w-6 h-6 bg-primary text-on-primary rounded-full flex items-center justify-center text-[10px] font-bold shadow-inner">
                 {user.name.charAt(0).toUpperCase()}
               </div>
-              <span className="hidden sm:block text-sm font-bold text-on-surface-variant group-hover:text-primary">
-                {user.name.split(' ')[0]}
+              <span className="hidden sm:block text-[10px] font-black tracking-widest text-on-background group-hover:text-primary">
+                {user.name.split(' ')[0].toUpperCase()}
               </span>
-              <ChevronDown className={`w-4 h-4 text-outline transition-transform duration-300 ${menuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3 h-3 text-on-background/40 transition-transform duration-300 ${menuOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-3 w-64 bg-surface-container-lowest rounded-2xl editorial-shadow border border-outline-variant/10 py-3 animate-scale-in overflow-hidden">
-                <div className="px-5 py-3 border-b border-outline-variant/10 mb-2">
-                  <p className="text-sm font-bold text-on-surface">{user.name}</p>
-                  <p className="text-xs text-outline">{user.email}</p>
+              <div className="absolute right-0 mt-2 w-56 bg-surface-variant rounded-xl shadow-2xl border border-white/5 py-2 animate-scale-in overflow-hidden z-[70] glass-nav">
+                <div className="px-4 py-2 border-b border-white/5 mb-1">
+                  <p className="text-xs font-bold text-on-surface">{user.name}</p>
+                  <p className="text-[10px] text-on-surface-variant">{user.email}</p>
                 </div>
 
                 <Link href={user.role === 'PROVEEDOR' ? '/landlord/dashboard' : '/student/favorites'}
-                  className="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[20px]">dashboard</span>
-                  Panel de Control
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">dashboard</span>
+                  PANEL
                 </Link>
 
                 <button
                   onClick={() => { logout(); setMenuOpen(false); }}
-                  className="flex items-center gap-3 w-full px-5 py-2.5 text-sm font-medium text-error hover:bg-error-container/20 transition-colors mt-2"
+                  className="flex items-center gap-2 w-full px-4 py-2 text-xs font-medium text-primary hover:bg-primary/10 transition-colors mt-1"
                 >
-                  <span className="material-symbols-outlined text-[20px]">logout</span>
-                  Cerrar Sesión
+                  <span className="material-symbols-outlined text-[18px]">logout</span>
+                  SALIR
                 </button>
               </div>
             )}
           </div>
-        ) : isMounted && (
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="hidden sm:flex items-center gap-1.5 px-6 py-2.5 rounded-full font-bold text-on-surface-variant hover:bg-surface-container-low transition-all duration-300"
-            >
-              Log In
+        ) : (
+          /* ── Guest State (Dropdown Logic) ── */
+          <div className="flex items-center gap-8">
+            <Link href="#" className="hidden sm:block font-black text-xs tracking-[0.2em] text-white hover:text-primary transition-all">
+              PUBLICAR
             </Link>
-            <Link
-              href="/register"
-              className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-primary/20 hover:scale-105 active:scale-95 transition-all duration-300"
+
+            <div
+              className="relative py-1"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              ref={guestMenuRef}
             >
-              Sign Up
-            </Link>
+              <Link
+                href="/login"
+                className="hidden md:block bg-primary text-on-primary px-6 py-2 rounded-lg font-black text-xs tracking-[0.2em] shadow-lg shadow-primary/20 hover:bg-primary-container transition-all"
+              >
+                INGRESAR
+              </Link>
+
+              {/* Guest Dropdown Menu - Versión Compacta */}
+              {guestMenuOpen && (
+                <div className="absolute right-0 mt-2 w-72 bg-surface-variant rounded-xl shadow-2xl border border-white/5 p-4 animate-scale-in z-[60] glass-nav">
+                  <p className="text-[11px] font-medium text-on-surface-variant mb-4 leading-relaxed">
+                    Ingresa y accede a tus favoritos y mensajes guardados.
+                  </p>
+
+                  <Link
+                    href="/login"
+                    className="w-full bg-primary text-on-primary py-2.5 rounded-lg font-black text-[10px] tracking-widest text-center block mb-4 shadow-lg shadow-primary/20 hover:bg-primary-container transition-all"
+                  >
+                    INGRESAR
+                  </Link>
+
+                  <div className="w-full h-px bg-white/5 mb-4" />
+
+                  <div className="flex flex-col gap-3">
+                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                      <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">chat_bubble</span>
+                      Mis contactos
+                    </Link>
+                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                      <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">favorite</span>
+                      Favoritos
+                    </Link>
+                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                      <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">notifications</span>
+                      Alertas
+                    </Link>
+                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                      <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">visibility</span>
+                      Historial
+                    </Link>
+                  </div>
+
+                  <div className="w-full h-px bg-white/5 my-4" />
+
+                  <div className="flex flex-col gap-3">
+                    <Link href="/login" className="flex items-center gap-2 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                      <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">person</span>
+                      Mi cuenta
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         <button
-          className="md:hidden p-2 rounded-full hover:bg-surface-container-low transition-colors"
+          className="md:hidden p-2 rounded-full hover:bg-white/5 transition-colors"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-on-surface" />}
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-on-background" />}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="absolute top-full left-0 w-full bg-white border-b border-outline-variant/10 p-6 flex flex-col gap-6 animate-slide-down md:hidden glass-nav shadow-xl">
-          <Link href="/search" className="text-lg font-bold text-primary flex items-center justify-between" onClick={() => setMobileOpen(false)}>
-            Explorar Cuartos <span className="material-symbols-outlined">search</span>
-          </Link>
-          <Link href="#" className="text-lg font-bold text-on-surface-variant" onClick={() => setMobileOpen(false)}>
-            Para Estudiantes
-          </Link>
-          <Link href="#" className="text-lg font-bold text-on-surface-variant" onClick={() => setMobileOpen(false)}>
-            Para Proveedores
-          </Link>
-          {isMounted && !isAuthenticated && (
-            <div className="flex flex-col gap-3 pt-4 border-t border-outline-variant/10">
-              <Link href="/login" className="w-full text-center py-4 rounded-2xl font-bold bg-surface-container-low" onClick={() => setMobileOpen(false)}>
-                Identificarse
-              </Link>
-              <Link href="/register" className="w-full text-center py-4 rounded-2xl font-bold bg-primary text-on-primary shadow-lg" onClick={() => setMobileOpen(false)}>
-                Registrarse
-              </Link>
+        <div className="fixed inset-0 z-[100] md:hidden animate-fade-in">
+          {/* Backdrop - Más claro para el tema blanco */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          
+          {/* Menu Content (Drawer Full Screen) */}
+          <div className="absolute top-0 right-0 w-full h-full bg-white flex flex-col animate-slide-left shadow-2xl z-[110]">
+            {/* Mobile Header (Light) */}
+            <div className="p-6 flex justify-between items-center border-b border-slate-100 bg-white relative z-20">
+               <span className="text-2xl font-black tracking-tighter text-primary">
+                Alquila<span className="text-slate-900">Ya</span>
+              </span>
+              <button 
+                onClick={() => setMobileOpen(false)}
+                className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+                aria-label="Cerrar menú"
+              >
+                <X className="w-8 h-8 text-slate-900" />
+              </button>
             </div>
-          )}
+
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10 bg-white relative z-10">
+              {!isAuthenticated && (
+                <>
+                  {/* Guest Header (White Theme) */}
+                  <div className="space-y-4">
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                      Ingresa y accede a los avisos que contactaste, tus favoritos y las búsquedas guardadas.
+                    </p>
+                    <Link 
+                      href="/login" 
+                      onClick={() => setMobileOpen(false)}
+                      className="w-full bg-primary text-white py-4 rounded-xl font-black text-sm tracking-widest text-center block shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                    >
+                      INGRESAR
+                    </Link>
+                  </div>
+
+                  {/* Student Quick Links (Dark Text on White) */}
+                  <div className="flex flex-col gap-2">
+                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
+                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">chat_bubble</span>
+                      Mis contactos
+                    </Link>
+                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
+                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">favorite</span>
+                      Favoritos
+                    </Link>
+                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
+                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">notifications</span>
+                      Búsquedas y alertas
+                    </Link>
+                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
+                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">visibility</span>
+                      Historial
+                    </Link>
+                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
+                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">person</span>
+                      Mi cuenta
+                    </Link>
+                  </div>
+
+                  {/* Publicar Button (Featured) */}
+                  <div className="pt-4">
+                    <Link 
+                      href="#" 
+                      onClick={() => setMobileOpen(false)}
+                      className="w-full border-2 border-primary text-primary py-4 rounded-xl font-black text-sm tracking-widest text-center block hover:bg-primary/5 transition-all"
+                    >
+                      PUBLICAR TU INMUEBLE
+                    </Link>
+                  </div>
+                </>
+              )}
+
+              {isAuthenticated && user && (
+                <div className="flex flex-col gap-6">
+                  <div className="bg-slate-50 p-6 rounded-2xl flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center font-black text-white text-xl">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-900 text-lg">{user.name}</p>
+                      <p className="text-sm text-slate-500 truncate w-48">{user.email}</p>
+                    </div>
+                  </div>
+                  <Link href="/landlord/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-lg font-bold text-slate-900 py-3">
+                    <span className="material-symbols-outlined text-slate-400">dashboard</span> PANEL DE CONTROL
+                  </Link>
+                  <button onClick={() => { logout(); setMobileOpen(false); }} className="flex items-center gap-4 text-lg font-bold text-primary text-left py-3 mt-4">
+                    <span className="material-symbols-outlined font-black">logout</span> CERRAR SESIÓN
+                  </button>
+                </div>
+              )}
+
+              {/* Base Navigation Section (Base List) */}
+              <div className="mt-auto pt-10 border-t border-slate-100 flex flex-col gap-6 pb-10">
+                <Link href="/" onClick={() => setMobileOpen(false)} className="flex justify-between items-center text-xl font-black tracking-widest text-slate-400 hover:text-primary transition-colors">
+                  INICIO <ChevronDown className="-rotate-90 w-5 h-5 opacity-30" />
+                </Link>
+                <Link href="/search" onClick={() => setMobileOpen(false)} className="flex justify-between items-center text-xl font-black tracking-widest text-slate-400 hover:text-primary transition-colors">
+                  EXPLORAR <ChevronDown className="-rotate-90 w-5 h-5 opacity-30" />
+                </Link>
+                <Link href="#" onClick={() => setMobileOpen(false)} className="flex justify-between items-center text-xl font-black tracking-widest text-slate-400 hover:text-primary transition-colors">
+                  GARANTÍA <ChevronDown className="-rotate-90 w-5 h-5 opacity-30" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </nav>
   );
 }
-

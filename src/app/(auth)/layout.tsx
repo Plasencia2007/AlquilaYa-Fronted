@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/features/auth/AuthProvider';
+import { useAuth } from '@/features/auth/useAuth';
 
 export default function AuthLayout({
   children,

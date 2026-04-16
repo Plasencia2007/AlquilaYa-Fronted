@@ -20,68 +20,75 @@ export function middleware(request: NextRequest) {
   const isExpired = payload ? payload.exp < Math.floor(Date.now() / 1000) : true;
   const isAuthenticated = !!payload && !isExpired;
 
+  let response: NextResponse;
+
   // --- 1. Rutas de autenticación (/login, /register) ---
-  // Seguridad 1000%: Si ya está logueado, redirigir a su dashboard correspondiente
   if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
     if (isAuthenticated && role) {
       if (role === 'ADMIN') {
-        return NextResponse.redirect(new URL('/admin-master', request.url));
+        response = NextResponse.redirect(new URL('/admin-master', request.url));
+      } else if (role === 'PROVEEDOR') {
+        response = NextResponse.redirect(new URL('/landlord/dashboard', request.url));
+      } else {
+        response = NextResponse.redirect(new URL('/', request.url));
       }
-      if (role === 'PROVEEDOR') {
-        return NextResponse.redirect(new URL('/landlord/dashboard', request.url));
-      }
-      return NextResponse.redirect(new URL('/', request.url));
+    } else {
+      response = NextResponse.next();
     }
-    return NextResponse.next();
   }
-
   // --- 2. Rutas de administrador (/admin-master) ---
-  if (pathname.startsWith('/admin-master')) {
+  else if (pathname.startsWith('/admin-master')) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      response = NextResponse.redirect(new URL('/login', request.url));
+    } else if (role !== 'ADMIN') {
+      response = NextResponse.redirect(new URL('/', request.url));
+    } else {
+      response = NextResponse.next();
     }
-    if (role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-    return NextResponse.next();
   }
-
   // --- 3. Rutas de proveedor (/landlord) ---
-  if (pathname.startsWith('/landlord')) {
+  else if (pathname.startsWith('/landlord')) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      response = NextResponse.redirect(new URL('/login', request.url));
+    } else if (role !== 'PROVEEDOR') {
+      response = NextResponse.redirect(new URL('/', request.url));
+    } else {
+      response = NextResponse.next();
     }
-    if (role !== 'PROVEEDOR') {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-    return NextResponse.next();
   }
-
   // --- 4. Rutas de estudiante (/student) ---
-  if (pathname.startsWith('/student')) {
+  else if (pathname.startsWith('/student')) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      response = NextResponse.redirect(new URL('/login', request.url));
+    } else if (role !== 'ESTUDIANTE') {
+      response = NextResponse.redirect(new URL('/', request.url));
+    } else {
+      response = NextResponse.next();
     }
-    if (role !== 'ESTUDIANTE') {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-    return NextResponse.next();
+  }
+  // --- Rutas públicas ---
+  else {
+    response = NextResponse.next();
   }
 
-  // --- Rutas públicas y recursos: pasar sin restricción ---
-  return NextResponse.next();
+  // ESTRATEGIA SEGURIDAD 1000%: Desactivar caché en rutas privadas para evitar
+  // que el navegador muestre versiones cacheadas (bfcache) al usar el botón "Atrás".
+  if (
+    pathname.startsWith('/admin-master') || 
+    pathname.startsWith('/landlord') || 
+    pathname.startsWith('/student')
+  ) {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+  }
+
+  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - rooms (public assets)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico|rooms).*)',
   ],
 };

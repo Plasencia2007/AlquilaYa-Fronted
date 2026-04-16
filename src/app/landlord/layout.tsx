@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/features/auth/AuthProvider';
+import { useAuth } from '@/features/auth/useAuth';
 import LandlordSidebar from '@/features/landlord/components/LandlordSidebar';
 
 export default function LandlordLayout({
@@ -19,21 +19,34 @@ export default function LandlordLayout({
   }, []);
 
   useEffect(() => {
-    // Seguridad 1000%: Bloqueo de cliente redundante al middleware
+    // Seguridad Multinivel: Si el navegador restaura la página desde caché (bfcache)
+    // forzamos una verificación real.
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted && (!isAuthenticated || user?.role !== 'PROVEEDOR')) {
+        router.replace('/login');
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+
     if (isMounted && !isLoading) {
       if (!isAuthenticated || user?.role !== 'PROVEEDOR') {
         router.replace('/login');
       }
     }
+
+    return () => window.removeEventListener('pageshow', handlePageShow);
   }, [isAuthenticated, user, isLoading, isMounted, router]);
 
   // Bloqueo visual preventivo: No renderiza nada si hay dudas sobre la sesión o el rol
   if (!isMounted || isLoading || !isAuthenticated || user?.role !== 'PROVEEDOR') {
     return (
-      <div className="fixed inset-0 z-[9999] bg-surface-container-lowest flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] animate-pulse">Protección de Socio Activa</p>
+      <div className="fixed inset-0 z-[9999] bg-[#0b1222] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+          <div className="text-center">
+            <p className="text-[11px] font-black text-blue-400 uppercase tracking-[0.3em] animate-pulse">Sincronizando Torre de Control</p>
+            <p className="text-[9px] text-[#64748b] font-bold mt-2 uppercase tracking-widest">Protección de Socio Activa</p>
+          </div>
         </div>
       </div>
     );

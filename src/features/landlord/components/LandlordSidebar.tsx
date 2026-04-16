@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAuth } from '@/features/auth/AuthProvider';
+import { useAuth } from '@/features/auth/useAuth';
 import { cn } from '@/utils/cn';
 
 interface NavSubItem {
@@ -129,7 +129,7 @@ export default function LandlordSidebar() {
 
   const handleLogout = () => {
     logout();
-    router.replace('/');
+    window.location.replace('/');
   };
 
   return (
@@ -164,6 +164,7 @@ export default function LandlordSidebar() {
                     {item.href ? (
                       <Link
                         href={item.href}
+                        replace
                         className={cn(
                           "w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 group",
                           isActive
@@ -234,6 +235,7 @@ export default function LandlordSidebar() {
                           <Link
                             key={subItem.href}
                             href={subItem.href}
+                            replace
                             className={cn(
                               "block py-1.5 text-xs font-bold transition-all hover:text-white",
                               pathname === subItem.href
