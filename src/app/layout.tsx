@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import AuthModal from "@/features/auth/AuthModal";
 
 export default function RootLayout({
   children,
@@ -55,6 +56,7 @@ export default function RootLayout({
       </head>
 
       <body className="antialiased min-h-screen flex flex-col">
+        <AuthModal />
         <Navbar />
         <main className="flex-1">
           {children}

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/useAuth';
+import { useAuthModal } from '@/features/auth/useAuthModal';
 import { MOCK_PROPERTIES } from '@/mocks';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -12,6 +13,7 @@ import { Input } from '@/components/ui/Input';
 
 export default function Home() {
   const { isAuthenticated, user, isLoading } = useAuth();
+  const { open: openAuthModal } = useAuthModal();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,8 +28,10 @@ export default function Home() {
 
   const featuredProperties = MOCK_PROPERTIES.filter(p => p.available).slice(0, 3);
 
-  // Si está logueado y se está redirigiendo, mostramos loading para evitar flicker del home
-  if (!isLoading && isAuthenticated) {
+  // Solo mostramos el spinner si el rol requiere redirección inmediata (evita flicker)
+  const needsRedirect = user && (user.role === 'PROVEEDOR' || user.role === 'ADMIN');
+
+  if (!isLoading && isAuthenticated && needsRedirect) {
     return (
       <div className="fixed inset-0 z-[9999] bg-white flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
@@ -175,8 +179,16 @@ export default function Home() {
               <li className="flex items-center gap-4 text-xs md:text-sm font-semibold text-on-surface/80"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Búsqueda inteligente</li>
               <li className="flex items-center gap-4 text-xs md:text-sm font-semibold text-on-surface/80"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Filtros Universitarios</li>
             </ul>
-            <Button variant="outline" size="xl" className="w-full rounded-xl">
-              Empezar a buscar
+            <Button 
+              variant="outline" 
+              size="xl" 
+              className="w-full rounded-xl"
+              onClick={() => {
+                if (!isAuthenticated) openAuthModal('register');
+                else router.push('/search');
+              }}
+            >
+              {isAuthenticated ? 'Explorar' : 'Empezar a buscar'}
             </Button>
           </Card>
 

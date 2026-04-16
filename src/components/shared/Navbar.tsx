@@ -4,10 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/useAuth';
+import { useAuthModal } from '@/features/auth/useAuthModal';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { open: openAuthModal } = useAuthModal();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -114,10 +116,43 @@ export default function Navbar() {
                   <p className="text-[10px] text-on-surface-variant">{user.email}</p>
                 </div>
 
-                <Link href={user.role === 'PROVEEDOR' ? '/landlord/dashboard' : '/student/favorites'}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">dashboard</span>
-                  PANEL
+                {user.role === 'PROVEEDOR' ? (
+                  <Link href="/landlord/dashboard"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
+                    <span className="material-symbols-outlined text-[18px]">dashboard</span>
+                    PANEL DE CONTROL
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/student/favorites"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
+                      <span className="material-symbols-outlined text-[18px]">favorite</span>
+                      MIS FAVORITOS
+                    </Link>
+                    <Link href="/student/messages"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
+                      <span className="material-symbols-outlined text-[18px]">chat_bubble</span>
+                      MIS CONTACTOS
+                    </Link>
+                    <Link href="/student/history"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
+                      <span className="material-symbols-outlined text-[18px]">visibility</span>
+                      HISTORIAL
+                    </Link>
+                  </>
+                )}
+
+                <div className="w-full h-px bg-white/5 my-1" />
+
+                <Link href="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-on-surface hover:bg-white/5 hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">person</span>
+                  MI CUENTA
                 </Link>
 
                 <button
@@ -143,12 +178,12 @@ export default function Navbar() {
               onMouseLeave={handleMouseLeave}
               ref={guestMenuRef}
             >
-              <Link
-                href="/login"
-                className="hidden md:block bg-primary text-on-primary px-6 py-2 rounded-lg font-black text-xs tracking-[0.2em] shadow-lg shadow-primary/20 hover:bg-primary-container transition-all"
+              <button
+                onClick={() => openAuthModal('login')}
+                className="hidden md:block bg-primary text-on-primary px-6 py-2 rounded-lg font-black text-xs tracking-[0.2em] shadow-lg shadow-primary/20 hover:bg-primary-container transition-all cursor-pointer"
               >
                 INGRESAR
-              </Link>
+              </button>
 
               {/* Guest Dropdown Menu - Versión Compacta */}
               {guestMenuOpen && (
@@ -157,41 +192,56 @@ export default function Navbar() {
                     Ingresa y accede a tus favoritos y mensajes guardados.
                   </p>
 
-                  <Link
-                    href="/login"
-                    className="w-full bg-primary text-on-primary py-2.5 rounded-lg font-black text-[10px] tracking-widest text-center block mb-4 shadow-lg shadow-primary/20 hover:bg-primary-container transition-all"
+                  <button
+                    onClick={() => { openAuthModal('login'); setGuestMenuOpen(false); }}
+                    className="w-full bg-primary text-on-primary py-2.5 rounded-lg font-black text-[10px] tracking-widest text-center block mb-4 shadow-lg shadow-primary/20 hover:bg-primary-container transition-all cursor-pointer"
                   >
                     INGRESAR
-                  </Link>
+                  </button>
 
                   <div className="w-full h-px bg-white/5 mb-4" />
 
                   <div className="flex flex-col gap-3">
-                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                    <button 
+                      onClick={() => { openAuthModal('login'); setGuestMenuOpen(false); }}
+                      className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group text-left w-full cursor-pointer"
+                    >
                       <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">chat_bubble</span>
                       Mis contactos
-                    </Link>
-                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                    </button>
+                    <button 
+                      onClick={() => { openAuthModal('login'); setGuestMenuOpen(false); }}
+                      className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group text-left w-full cursor-pointer"
+                    >
                       <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">favorite</span>
                       Favoritos
-                    </Link>
-                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                    </button>
+                    <button 
+                      onClick={() => { openAuthModal('login'); setGuestMenuOpen(false); }}
+                      className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group text-left w-full cursor-pointer"
+                    >
                       <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">notifications</span>
                       Alertas
-                    </Link>
-                    <Link href="/login" className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                    </button>
+                    <button 
+                      onClick={() => { openAuthModal('login'); setGuestMenuOpen(false); }}
+                      className="flex items-center gap-3 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group text-left w-full cursor-pointer"
+                    >
                       <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">visibility</span>
                       Historial
-                    </Link>
+                    </button>
                   </div>
 
                   <div className="w-full h-px bg-white/5 my-4" />
 
                   <div className="flex flex-col gap-3">
-                    <Link href="/login" className="flex items-center gap-2 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group">
+                    <button 
+                      onClick={() => { openAuthModal('login'); setGuestMenuOpen(false); }}
+                      className="flex items-center gap-2 text-[11px] font-bold text-on-surface hover:text-primary transition-colors group text-left w-full cursor-pointer"
+                    >
                       <span className="material-symbols-outlined text-[18px] text-outline group-hover:text-primary">person</span>
                       Mi cuenta
-                    </Link>
+                    </button>
                   </div>
                 </div>
               )}
@@ -208,27 +258,23 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden animate-fade-in">
-          {/* Backdrop - Más claro para el tema blanco */}
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          
-          {/* Menu Content (Drawer Full Screen) */}
-          <div className="absolute top-0 right-0 w-full h-full bg-white flex flex-col animate-slide-left shadow-2xl z-[110]">
-            {/* Mobile Header (Light) */}
-            <div className="p-6 flex justify-between items-center border-b border-slate-100 bg-white relative z-20">
-               <span className="text-2xl font-black tracking-tighter text-primary">
-                Alquila<span className="text-slate-900">Ya</span>
-              </span>
-              <button 
-                onClick={() => setMobileOpen(false)}
-                className="p-2 rounded-full hover:bg-slate-100 transition-colors"
-                aria-label="Cerrar menú"
-              >
-                <X className="w-8 h-8 text-slate-900" />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-[100] md:hidden bg-white animate-fade-in flex flex-col h-screen">
+          {/* Mobile Header (Light) - FIJO en la parte superior */}
+          <div className="p-6 flex justify-between items-center border-b border-slate-100 bg-white sticky top-0 z-20">
+             <span className="text-2xl font-black tracking-tighter text-primary">
+              Alquila<span className="text-slate-900">Ya</span>
+            </span>
+            <button 
+              onClick={() => setMobileOpen(false)}
+              className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+              aria-label="Cerrar menú"
+            >
+              <X className="w-8 h-8 text-slate-900" />
+            </button>
+          </div>
 
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10 bg-white relative z-10">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10 bg-white min-h-0">
               {!isAuthenticated && (
                 <>
                   {/* Guest Header (White Theme) */}
@@ -236,37 +282,32 @@ export default function Navbar() {
                     <p className="text-sm text-slate-500 font-medium leading-relaxed">
                       Ingresa y accede a los avisos que contactaste, tus favoritos y las búsquedas guardadas.
                     </p>
-                    <Link 
-                      href="/login" 
-                      onClick={() => setMobileOpen(false)}
-                      className="w-full bg-primary text-white py-4 rounded-xl font-black text-sm tracking-widest text-center block shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                    <button 
+                      onClick={() => { openAuthModal('login'); setMobileOpen(false); }}
+                      className="w-full bg-primary text-white py-4 rounded-xl font-black text-sm tracking-widest text-center block shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
                     >
                       INGRESAR
-                    </Link>
+                    </button>
                   </div>
 
                   {/* Student Quick Links (Dark Text on White) */}
                   <div className="flex flex-col gap-2">
-                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
-                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">chat_bubble</span>
-                      Mis contactos
-                    </Link>
-                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
-                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">favorite</span>
-                      Favoritos
-                    </Link>
-                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
-                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">notifications</span>
-                      Búsquedas y alertas
-                    </Link>
-                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
-                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">visibility</span>
-                      Historial
-                    </Link>
-                    <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group">
-                      <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">person</span>
-                      Mi cuenta
-                    </Link>
+                    {[
+                      { href: '/login', icon: 'chat_bubble', text: 'Mis contactos' },
+                      { href: '/login', icon: 'favorite', text: 'Favoritos' },
+                      { href: '/login', icon: 'notifications', text: 'Búsquedas y alertas' },
+                      { href: '/login', icon: 'visibility', text: 'Historial' },
+                      { href: '/login', icon: 'person', text: 'Mi cuenta' },
+                    ].map((item) => (
+                      <button 
+                        key={item.text}
+                        onClick={() => { openAuthModal('login'); setMobileOpen(false); }} 
+                        className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group text-left w-full cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">{item.icon}</span>
+                        {item.text}
+                      </button>
+                    ))}
                   </div>
 
                   {/* Publicar Button (Featured) */}
@@ -293,9 +334,30 @@ export default function Navbar() {
                       <p className="text-sm text-slate-500 truncate w-48">{user.email}</p>
                     </div>
                   </div>
-                  <Link href="/landlord/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-lg font-bold text-slate-900 py-3">
-                    <span className="material-symbols-outlined text-slate-400">dashboard</span> PANEL DE CONTROL
-                  </Link>
+                  {user.role === 'PROVEEDOR' ? (
+                    <Link href="/landlord/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 text-lg font-bold text-slate-900 py-3">
+                      <span className="material-symbols-outlined text-slate-400">dashboard</span> PANEL DE CONTROL
+                    </Link>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      {[
+                        { href: '/student/messages', icon: 'chat_bubble', text: 'Mis contactos' },
+                        { href: '/student/favorites', icon: 'favorite', text: 'Favoritos' },
+                        { href: '/student/alerts', icon: 'notifications', text: 'Búsquedas y alertas' },
+                        { href: '/student/history', icon: 'visibility', text: 'Historial' },
+                        { href: '/student/profile', icon: 'person', text: 'Mi cuenta' },
+                      ].map((item) => (
+                        <button 
+                          key={item.text}
+                          onClick={() => { router.push(item.href); setMobileOpen(false); }} 
+                          className="flex items-center gap-4 text-base font-bold text-slate-900 hover:text-primary transition-colors py-4 border-b border-slate-50 group text-left w-full cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[24px] text-slate-400 group-hover:text-primary transition-colors">{item.icon}</span>
+                          {item.text}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <button onClick={() => { logout(); setMobileOpen(false); }} className="flex items-center gap-4 text-lg font-bold text-primary text-left py-3 mt-4">
                     <span className="material-symbols-outlined font-black">logout</span> CERRAR SESIÓN
                   </button>
@@ -313,7 +375,6 @@ export default function Navbar() {
                 <Link href="#" onClick={() => setMobileOpen(false)} className="flex justify-between items-center text-xl font-black tracking-widest text-slate-400 hover:text-primary transition-colors">
                   GARANTÍA <ChevronDown className="-rotate-90 w-5 h-5 opacity-30" />
                 </Link>
-              </div>
             </div>
           </div>
         </div>
