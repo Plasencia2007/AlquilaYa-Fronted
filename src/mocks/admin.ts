@@ -15,3 +15,13 @@ export const RECENT_ACTIVITIES: RecentActivity[] = [
   { id: '5', type: 'reserva', description: 'Reserva confirmada - Estudio San Isidro', user: 'Laura G.', timestamp: 'Hace 3 horas', status: 'activo' },
   { id: '6', type: 'registro', description: 'Nuevo estudiante registrado', user: 'Diego R.', timestamp: 'Hace 4 horas', status: 'activo' },
 ];
+
+export const SIDEBAR_METRICS = {
+  providersPending: 5,
+  propertiesToReview: 12,
+  reportsPending: 2,
+  premiumAds: 3,
+  financePending: 3,
+  systemAlerts: 1,
+};
+

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -18,7 +18,6 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Si ya está logueado, mandarlo a su dashboard
     if (!isAuthLoading && isAuthenticated && user) {
       if (user.role === 'PROVEEDOR') {
         router.replace('/landlord/dashboard');
@@ -52,10 +51,10 @@ export default function LoginPage() {
   };
 
   return (
-    <Card variant="lowest" padding="lg" className="animate-scale-in" hoverable={false}>
+    <Card variant="glass" padding="lg" className="animate-scale-in" hoverable={false}>
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-black text-on-surface tracking-tight mb-2">Bienvenido de vuelta</h1>
-        <p className="text-on-surface-variant font-medium opacity-70">Gestiona tu espacio o encuentra tu hogar.</p>
+        <h1 className="text-4xl font-black text-on-surface tracking-tighter mb-2">Bienvenido de vuelta</h1>
+        <p className="text-on-surface-variant text-sm font-medium opacity-70">Gestiona tu espacio o encuentra tu hogar.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,12 +131,12 @@ export default function LoginPage() {
 
       {/* Google (disabled) */}
       <Button
-          variant="ghost"
-          disabled
-          className="w-full border border-outline-variant/30"
-          leftIcon={<svg className="w-5 h-5 opacity-50" viewBox="0 0 24 24"><path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>}
+        variant="ghost"
+        disabled
+        className="w-full border border-outline-variant/30"
+        leftIcon={<svg className="w-5 h-5 opacity-50" viewBox="0 0 24 24"><path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" /></svg>}
       >
-          Cuenta Google
+        Cuenta Google
       </Button>
 
       {/* Link a registro */}
