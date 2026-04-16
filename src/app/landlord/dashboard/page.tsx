@@ -4,9 +4,12 @@ import { StatCard } from '@/features/landlord/components/StatCard';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { useAuth } from '@/features/auth/useAuth';
 import { cn } from '@/utils/cn';
 
 export default function LandlordDashboardPage() {
+  const { usuario } = useAuth();
+
   return (
     <div className="space-y-10 animate-fade-in py-4">
       
@@ -14,7 +17,7 @@ export default function LandlordDashboardPage() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-4">
         <div>
           <h1 className="text-3xl font-black text-on-surface tracking-tighter opacity-90">
-            Hola, <span className="text-blue-500 font-black">Carlos</span>.
+            Hola, <span className="text-blue-500 font-black">{usuario?.nombre.split(' ')[0] || 'Socio'}</span>.
           </h1>
           <p className="text-on-surface-variant text-[12px] font-medium mt-0.5 tracking-tight">Vistazo rápido de tus operaciones.</p>
         </div>
@@ -29,30 +32,30 @@ export default function LandlordDashboardPage() {
       {/* ── Minimalist Stats Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
-          title="Ingresos Totales" 
-          value="S/ 3,450" 
-          trend={12.5} 
+          titulo="Ingresos Totales" 
+          valor="S/ 3,450" 
+          tendencia={12.5} 
           icon="payments" 
           variant="minimal"
         />
         <StatCard 
-          title="Ocupación" 
-          value="85%" 
-          trend={2.3} 
+          titulo="Ocupación" 
+          valor="85%" 
+          tendencia={2.3} 
           icon="meeting_room" 
           variant="minimal"
         />
         <StatCard 
-          title="Vistas Totales" 
-          value="1,240" 
-          trend={-5.4} 
+          titulo="Vistas Totales" 
+          valor="1,240" 
+          tendencia={-5.4} 
           icon="visibility" 
           variant="minimal"
         />
         <StatCard 
-          title="Mensajes" 
-          value="12" 
-          trend={8.1} 
+          titulo="Mensajes" 
+          valor="12" 
+          tendencia={8.1} 
           icon="chat" 
           variant="minimal"
         />

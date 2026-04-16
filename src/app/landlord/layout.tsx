@@ -10,7 +10,7 @@ export default function LandlordLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { estaAutenticado, usuario, cargando } = useAuth();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -22,15 +22,15 @@ export default function LandlordLayout({
     // Seguridad Multinivel: Si el navegador restaura la página desde caché (bfcache)
     // forzamos una verificación real.
     const handlePageShow = (event: PageTransitionEvent) => {
-      if (event.persisted && (!isAuthenticated || user?.role !== 'PROVEEDOR')) {
-        router.replace('/login');
+      if (event.persisted && (!estaAutenticado || usuario?.rol !== 'PROVEEDOR')) {
+        router.replace('/');
       }
     };
     window.addEventListener('pageshow', handlePageShow);
 
-    if (isMounted && !isLoading) {
-      if (!isAuthenticated || user?.role !== 'PROVEEDOR') {
-        router.replace('/login');
+    if (isMounted && !cargando) {
+      if (!estaAutenticado || usuario?.rol !== 'PROVEEDOR') {
+        router.replace('/');
       }
     }
 
@@ -38,7 +38,7 @@ export default function LandlordLayout({
   }, [isAuthenticated, user, isLoading, isMounted, router]);
 
   // Bloqueo visual preventivo: No renderiza nada si hay dudas sobre la sesión o el rol
-  if (!isMounted || isLoading || !isAuthenticated || user?.role !== 'PROVEEDOR') {
+  if (!isMounted || cargando || !estaAutenticado || usuario?.rol !== 'PROVEEDOR') {
     return (
       <div className="fixed inset-0 z-[9999] bg-[#0b1222] flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">

@@ -19,8 +19,8 @@ export const ACTIVIDADES_RECIENTES: ActividadReciente[] = [
 export const METRICAS_LATERALES = {
   proveedoresPendientes: 5,
   inmueblesPorRevisar: 12,
-  reportesPendientes: 2,
-  avisosPremium: 3,
+  denunciasPendientes: 2,
+  anunciosPremium: 3,
   finanzasPendientes: 3,
   alertasSistema: 1,
 };

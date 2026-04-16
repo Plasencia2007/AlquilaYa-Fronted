@@ -118,7 +118,7 @@ const NAVIGATION: NavCategory[] = [
 export default function LandlordSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { usuario, cerrarSesion } = useAuth();
   const [expandedItems, setExpandedItems] = useState<string[]>(['PROPIEDADES', 'RESERVAS']);
 
   const toggleItem = (label: string) => {
@@ -128,7 +128,7 @@ export default function LandlordSidebar() {
   };
 
   const handleLogout = () => {
-    logout();
+    cerrarSesion();
     window.location.replace('/');
   };
 
@@ -268,11 +268,11 @@ export default function LandlordSidebar() {
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-9 h-9 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
               <span className="text-blue-400 text-xs font-black">
-                {user?.name?.substring(0, 2).toUpperCase() || 'CA'}
+                {usuario?.nombre?.substring(0, 2).toUpperCase() || 'CA'}
               </span>
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-black text-white tracking-tight truncate">{user?.name || 'Carlos Apaza'}</p>
+              <p className="text-xs font-black text-white tracking-tight truncate">{usuario?.nombre || 'Socio AlquilaYa'}</p>
               <p className="text-[10px] text-blue-400/50 font-bold truncate">Socio Verificado</p>
             </div>
           </div>
